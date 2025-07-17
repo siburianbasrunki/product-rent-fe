@@ -6,21 +6,31 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 export const BrandSection = () => {
- const sliderSettings = {
+  const sliderSettings = {
     infinite: true,
-    speed: 5000,
-    slidesToShow: 3,
+    speed: 2000,
+    slidesToShow: 4,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 0,
-    cssEase: 'linear',
-    pauseOnHover: false,
-    pauseOnFocus: false,
+    autoplaySpeed: 2000,
+    cssEase: "ease-out",
+    pauseOnHover: true,
     arrows: false,
     dots: false,
-    centerMode: false,
-    variableWidth: false,
-    
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 4,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 3,
+        },
+      },
+    ],
   };
 
   const { data: brands, isLoading, isError, error } = useBrand();
@@ -30,24 +40,27 @@ export const BrandSection = () => {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
-        <p className="text-xl font-semibold">Browse by brands</p>
-      </div>
+      <p className="text-xl font-bold text-[#033247] mb-2">Brand</p>
+
       <div className="slider-container">
-        <Slider {...sliderSettings} className="px-2 md:px-4">
+        <Slider {...sliderSettings}>
           {brands?.map((brand) => (
             <div
               key={brand.id}
-              className="bg-gradient-to-t from-white/80 to-transparent rounded-xl p-4 flex flex-col items-center shadow-md hover:scale-[1.02] transition-transform duration-200 border border-gray-300 mx-10" 
+              className="px-1 outline-none focus:outline-none"
             >
-              <img
-                src={brand.imageUrl}
-                alt={brand.name}
-                className="w-20 h-20 rounded-md object-contain"
-              />
-              <p className="text-sm font-semibold text-black mt-3">
-                {brand.name}
-              </p>
+              <div className="flex flex-col items-center ">
+                <div className="bg-white p-3 rounded-md shadow-sm hover:shadow-md transition-shadow">
+                  <img
+                    src={brand.imageUrl}
+                    alt={brand.name}
+                    className="w-20 h-20 object-contain object-center"
+                  />
+                </div>
+                <p className="text-sm text-[#1D1E20] mt-2 text-center font-medium">
+                  {brand.name}
+                </p>
+              </div>
             </div>
           ))}
         </Slider>

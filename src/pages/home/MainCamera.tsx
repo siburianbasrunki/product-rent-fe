@@ -8,8 +8,6 @@ import { EmptyState } from "../../components/EmptyState";
 export const CameraSection = () => {
   const navigate = useNavigate();
   const { data: cameras, isLoading, isError, error } = useCamera();
- 
-  
 
   if (isLoading) return <CardSkeleton />;
   if (isError) return <EmptyState title={error.message} />;
@@ -17,10 +15,10 @@ export const CameraSection = () => {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-6">
-        <p className="text-2xl font-bold text-gray-800">List Camera</p>
+        <p className="text-xl font-bold text-[#033247]">List Camera</p>
         {cameras?.length === 0 ? null : (
           <FaArrowRight
-            className="w-10 h-5 text-gray-600"
+            className="w-10 h-5 text-[#2A8E9E] cursor-pointer"
             onClick={() => navigate("/camera")}
           />
         )}
@@ -33,7 +31,8 @@ export const CameraSection = () => {
           cameras?.slice(0, 3).map((camera) => (
             <div
               key={camera.id}
-              className="bg-white rounded-2xl shadow hover:shadow-lg transition duration-300 border border-gray-200 flex flex-col"
+              onClick={() => navigate(`/camera/${camera.id}`)}
+              className="bg-white rounded-2xl shadow hover:shadow-lg transition duration-300 border border-[#E9F3F4] flex flex-col cursor-pointer"
             >
               <div className="flex justify-center items-center p-4">
                 <img
@@ -44,19 +43,12 @@ export const CameraSection = () => {
               </div>
 
               <div className="px-4 pb-4 flex flex-col gap-2">
-                <p className="text-lg font-semibold text-gray-800">
+                <p className="text-lg font-semibold text-[#1D1E20]">
                   {camera.name}
                 </p>
-                <p className="text-gray-600">
+                <p className="text-[#2A8E9E]">
                   {formatRupiah(camera.price)} / day
                 </p>
-
-                {/* <button
-                  className="mt-2 px-4 py-2 text-sm font-medium bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-md hover:from-indigo-700 hover:to-blue-700 transition"
-                  onClick={() => navigate(`/camera/${camera.id}`)}
-                >
-                  Detail
-                </button> */}
               </div>
             </div>
           ))
