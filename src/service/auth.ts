@@ -4,6 +4,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  // level: number
 }
 
 export interface AuthResponse {
@@ -39,12 +40,15 @@ const AuthService = {
 
   async requestOtp(email: string): Promise<OtpResponse> {
     const { auth } = getEndpoints();
-    const res = await fetch(`${auth}/login/request-otp`, {
+    const res = await fetch(`${auth}/send-otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({
+        email,
+        level: 1,
+      }),
     });
     const json = await res.json();
 
@@ -55,14 +59,14 @@ const AuthService = {
     return json.data;
   },
 
-  async verifyOtp(email: string, otp: string): Promise<AuthResponse> {
+  async verifyOtp(email: string, code: string): Promise<AuthResponse> {
     const { auth } = getEndpoints();
-    const res = await fetch(`${auth}/login/verify-otp`, {
+    const res = await fetch(`${auth}/verify-otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, otp }),
+      body: JSON.stringify({ email, code , level: 1 }),
     });
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const json = await res.json();
