@@ -1,6 +1,6 @@
-export interface Brand {
+export interface Category {
   id: string;
   name: string;
-  imageUrl: string;
+  img: string;
   imageId: string;
 }

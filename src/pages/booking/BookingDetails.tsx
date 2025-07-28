@@ -3,13 +3,11 @@ import {
   FaCalendarAlt,
   FaClock,
   FaMoneyBillWave,
-  FaQrcode,
   FaSpinner,
   FaArrowLeft,
   FaRegCopy,
 } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import QRCode from "react-qr-code";
 import {
   useBookingById,
   useCancelBooking,
@@ -27,13 +25,14 @@ export const BookingDetail = () => {
   const { mutate: cancelBooking, isPending: isCancelling } = useCancelBooking();
   const [paymentStatus, setPaymentStatus] = useState<any>(null);
   const { showConfirmation } = useConfirmation();
+
   useEffect(() => {
-    if (booking?.payment?.status === "PENDING" && !paymentStatus) {
+    if (booking?.status === "PENDING" && !paymentStatus) {
       const interval = setInterval(() => {
         checkPayment(booking.id, {
           onSuccess: (data) => {
-            setPaymentStatus(data.paymentStatus);
-            if (data.paymentStatus.transaction_status === "settlement") {
+            setPaymentStatus(data.status);
+            if (data.status === "succeeded") {
               clearInterval(interval);
             }
           },
@@ -48,7 +47,7 @@ export const BookingDetail = () => {
     if (!booking) return;
     checkPayment(booking.id, {
       onSuccess: (data) => {
-        setPaymentStatus(data.paymentStatus);
+        setPaymentStatus(data.status);
       },
     });
   };
@@ -67,57 +66,58 @@ export const BookingDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white p-4 flex justify-center items-center">
-        <FaSpinner className="animate-spin text-2xl text-indigo-600" />
+      <div className="min-h-screen bg-[#E9F3F4] p-4 flex justify-center items-center">
+        <FaSpinner className="animate-spin text-2xl text-[#2A8E9E]" />
       </div>
     );
   }
 
   if (!booking) {
     return (
-      <div className="min-h-screen bg-white p-4 flex justify-center items-center">
-        <p>Booking tidak ditemukan</p>
+      <div className="min-h-screen bg-[#E9F3F4] p-4 flex justify-center items-center">
+        <p className="text-[#033247]">Booking tidak ditemukan</p>
       </div>
     );
   }
 
-  const currentStatus =
-    paymentStatus?.transaction_status || booking.payment?.status;
+  const currentStatus = paymentStatus || booking.status;
 
   return (
-    <div className="min-h-screen bg-white p-4">
+    <div className="min-h-screen bg-[#E9F3F4] p-4">
       <div className="max-w-2xl mx-auto">
         <button
           onClick={() => navigate("/booking")}
-          className="flex items-center text-indigo-600 mb-4 cursor-pointer"
+          className="flex items-center text-[#2A8E9E] hover:text-[#033247] transition-colors duration-300 mb-4 cursor-pointer"
         >
           <FaArrowLeft className="mr-2" />
           Kembali
         </button>
 
-        <h1 className="text-2xl font-bold mb-6">Detail Booking</h1>
+        <h1 className="text-2xl font-bold mb-6 text-[#033247]">
+          Detail Booking
+        </h1>
 
-        <div className="border rounded-lg p-6">
+        <div className="border border-[#2A8E9E]/30 rounded-lg p-6 bg-white shadow-sm">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h2 className="font-medium text-xl">{booking.camera.name}</h2>
-              {/* <h3 className="font-bold text-lg  text-gray-500">
-                Rp{booking.totalPrice.toLocaleString()}
-              </h3> */}
-              <div className="flex items-center mt-2 text-gray-500">
-                <FaCalendarAlt className="mr-2" />
+              <h2 className="font-medium text-xl text-[#033247]">
+                {booking.product_detail.name}
+              </h2>
+              <div className="flex items-center mt-2 text-[#033247]/70">
+                <FaCalendarAlt className="mr-2 text-[#2A8E9E]" />
                 <span>
-                  {new Date(booking.date).toLocaleDateString("en-US", {
+                  {new Date(booking.created_at).toLocaleDateString("id-ID", {
                     weekday: "long",
                     day: "numeric",
                     month: "long",
+                    year: "numeric",
                   })}
                 </span>
               </div>
-              <div className="flex items-center mt-1 text-gray-500">
-                <FaClock className="mr-2" />
+              <div className="flex items-center mt-1 text-[#033247]/70">
+                <FaClock className="mr-2 text-[#2A8E9E]" />
                 <span>
-                  {new Date(booking.date).toLocaleString("en-US", {
+                  {new Date(booking.created_at).toLocaleTimeString("id-ID", {
                     hour: "numeric",
                     minute: "numeric",
                   })}
@@ -131,19 +131,24 @@ export const BookingDetail = () => {
                     Menunggu Pembayaran
                   </span>
                 )}
-                {currentStatus === "settlement" && (
+                {currentStatus === "SUCCEEDED" && (
                   <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm outline outline-green-800">
-                    Dibayar
+                    Pembayaran Berhasil
                   </span>
                 )}
-                {currentStatus === "expired" && (
+                {currentStatus === "EXPIRED" && (
                   <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm outline outline-red-800">
                     Kadaluarsa
                   </span>
                 )}
-                {booking.status === "CANCELLED" && (
+                {currentStatus === "FAILED" && (
                   <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm outline outline-red-800">
-                    Dibatalkan
+                    Gagal
+                  </span>
+                )}
+                {currentStatus === "ACTIVATED" && (
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm outline outline-blue-800">
+                    Aktif
                   </span>
                 )}
               </div>
@@ -151,184 +156,128 @@ export const BookingDetail = () => {
           </div>
 
           <div className="mb-6">
-            <h3 className="font-medium mb-2">Tujuan Pemakaian</h3>
-            <p className="text-gray-700">{booking.purpose}</p>
+            <h3 className="font-medium mb-2 text-[#033247]">
+              Deskripsi Produk
+            </h3>
+            <ul className="text-[#033247]/80 list-disc pl-5">
+              {booking.product_detail.description.map(
+                (desc: string, index: number) => (
+                  <li key={index}>{desc}</li>
+                )
+              )}
+            </ul>
           </div>
 
-          {booking.payment && (
-            <div className="border-t pt-6">
-              <h3 className="font-medium mb-4">Detail Pembayaran</h3>
+          <div className="border-t border-[#2A8E9E]/30 pt-6">
+            <h3 className="font-medium mb-4 text-[#033247]">
+              Detail Pembayaran
+            </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-                {currentStatus !== "SETTLED" &&
-                  currentStatus !== "EXPIRED" &&
-                  currentStatus !== "CANCELLED" && (
-                    <div>
-                      <div className="flex items-center mb-2">
-                        {booking.payment.paymentMethod === "BANK_TRANSFER" ? (
-                          <FaMoneyBillWave className="text-blue-500 mr-2" />
-                        ) : (
-                          <FaQrcode className="text-green-500 mr-2" />
-                        )}
-                        <span>
-                          {booking.payment.paymentMethod === "BANK_TRANSFER"
-                            ? "Bank Transfer BCA (Bank Central Asia)"
-                            : "QRIS"}
-                        </span>
-                      </div>
-
-                      {booking.payment.paymentMethod === "BANK_TRANSFER" && (
-                        <div className="mt-4">
-                          <h4 className="font-medium mb-2">
-                            Nomor Virtual Account
-                          </h4>
-                          <div className="bg-gray-100 p-3 rounded-lg font-mono text-lg flex items-center gap-3">
-                            {booking.payment.paymentCode}
-
-                            <FaRegCopy
-                              className={`text-gray-500 cursor-pointer ${
-                                copied ? "text-green-500" : ""
-                              }`}
-                              onClick={async () => {
-                                try {
-                                  await navigator.clipboard.writeText(
-                                    booking.payment
-                                      ? booking.payment.paymentCode || ""
-                                      : ""
-                                  );
-                                  setCopied(true);
-                                  setTimeout(() => setCopied(false), 2000);
-                                } catch (err) {
-                                  console.error("Failed to copy:", err);
-                                }
-                              }}
-                            />
-                          </div>
-                          {copied && (
-                            <p className="text-sm text-green-500 mt-2">
-                              Nomor virtual account berhasil disalin
-                            </p>
-                          )}
-                          <p className="text-sm text-gray-500 mt-2">
-                            Gunakan nomor ini untuk melakukan pembayaran melalui
-                            ATM/mobile banking
-                          </p>
-                        </div>
-                      )}
-
-                      {booking.payment.paymentMethod === "QRIS" && (
-                        <div className="mt-4">
-                          <h4 className="font-medium mb-2">
-                            QR Code Pembayaran
-                          </h4>
-                          <div className="bg-white p-4 rounded-lg border flex justify-center">
-                            <QRCode
-                              value={booking.payment.paymentCode || ""}
-                              size={180}
-                            />
-                          </div>
-                          <p className="text-sm text-gray-500 mt-2">
-                            Scan QR code ini menggunakan aplikasi mobile banking
-                            Anda
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  )}
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+              {currentStatus === "PENDING" && (
                 <div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Total Pembayaran</span>
-                      <span className="font-medium">
-                        Rp{booking.totalPrice.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Metode Pembayaran</span>
-                      <span>
-                        {booking.payment.paymentMethod === "BANK_TRANSFER"
-                          ? "Bank Transfer BCA "
-                          : "QRIS"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Status Pembayaran</span>
-                      <span>
-                        {currentStatus === "PENDING" && "Menunggu Pembayaran"}
-                        {currentStatus === "SETTLED" && "Berhasil"}
-                        {currentStatus === "EXPIRED" && "Kadaluarsa"}
-                        {currentStatus === "FAILED" && "Gagal"}
-                      </span>
-                    </div>
-                    {booking.payment.expiryTime && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">
-                          Batas Waktu Pembayaran
-                        </span>
-                        <span>
-                          {new Date(
-                            booking.payment.expiryTime
-                          ).toLocaleString()}
-                        </span>
-                      </div>
-                    )}
+                  <div className="flex items-center mb-2 text-[#033247]">
+                    <FaMoneyBillWave className="text-[#2A8E9E] mr-2" />
+                    <span>Bank Transfer BCA (Bank Central Asia)</span>
                   </div>
 
-                  {currentStatus === "PENDING" && (
-                    <div className="mt-6 space-y-3">
-                      <button
-                        onClick={handleCheckPayment}
-                        disabled={isCheckingPayment}
-                        className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition font-medium disabled:bg-indigo-300 flex items-center justify-center"
-                      >
-                        {isCheckingPayment ? (
-                          <>
-                            <FaSpinner className="animate-spin mr-2" />
-                            Memeriksa...
-                          </>
-                        ) : (
-                          "Periksa Status Pembayaran"
-                        )}
-                      </button>
-                      <button
-                        onClick={handleCancelBooking}
-                        disabled={isCancelling}
-                        className="w-full bg-red-100 text-red-600 py-2 rounded-lg hover:bg-red-200 transition font-medium disabled:bg-red-50 flex items-center justify-center"
-                      >
-                        {isCancelling ? (
-                          <>
-                            <FaSpinner className="animate-spin mr-2" />
-                            Membatalkan...
-                          </>
-                        ) : (
-                          "Batalkan Booking"
-                        )}
-                      </button>
+                  <div className="mt-4">
+                    <h4 className="font-medium mb-2 text-[#033247]">
+                      Nomor Virtual Account
+                    </h4>
+                    <div className="bg-[#E9F3F4] p-3 rounded-lg font-mono text-lg flex items-center gap-3">
+                      {booking.virtual_account_id}
+
+                      <FaRegCopy
+                        className={`text-[#2A8E9E] cursor-pointer ${
+                          copied ? "text-green-500" : ""
+                        }`}
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(
+                              booking.virtual_account_id
+                            );
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 2000);
+                          } catch (err) {
+                            console.error("Failed to copy:", err);
+                          }
+                        }}
+                      />
+                    </div>
+                    {copied && (
+                      <p className="text-sm text-green-500 mt-2">
+                        Nomor virtual account berhasil disalin
+                      </p>
+                    )}
+                    <p className="text-sm text-[#033247]/70 mt-2">
+                      Gunakan nomor ini untuk melakukan pembayaran melalui
+                      ATM/mobile banking
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-[#033247]/70">Total Pembayaran</span>
+                    <span className="font-medium text-[#033247]">
+                      Rp{booking.product_detail.price.toLocaleString("id-ID")}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#033247]/70">Metode Pembayaran</span>
+                    <span className="text-[#033247]">Bank Transfer BCA</span>
+                  </div>
+
+                  {booking.expired_at && (
+                    <div className="flex justify-between">
+                      <span className="text-[#033247]/70">
+                        Batas Waktu Pembayaran
+                      </span>
+                      <span className="text-[#033247]">
+                        {new Date(booking.expired_at).toLocaleString("id-ID")}
+                      </span>
                     </div>
                   )}
                 </div>
+
+                {currentStatus === "PENDING" && (
+                  <div className="mt-6 space-y-3">
+                    <button
+                      onClick={handleCheckPayment}
+                      disabled={isCheckingPayment}
+                      className="w-full bg-gradient-to-r from-[#033247] to-[#2A8E9E] text-white py-2 rounded-lg hover:from-[#033247]/90 hover:to-[#2A8E9E]/90 transition-all duration-300 font-medium disabled:opacity-70 flex items-center justify-center"
+                    >
+                      {isCheckingPayment ? (
+                        <>
+                          <FaSpinner className="animate-spin mr-2" />
+                          Memeriksa...
+                        </>
+                      ) : (
+                        "Periksa Status Pembayaran"
+                      )}
+                    </button>
+                    <button
+                      onClick={handleCancelBooking}
+                      disabled={isCancelling}
+                      className="w-full bg-red-100 text-red-600 py-2 rounded-lg hover:bg-red-200 transition font-medium disabled:bg-red-50 flex items-center justify-center"
+                    >
+                      {isCancelling ? (
+                        <>
+                          <FaSpinner className="animate-spin mr-2" />
+                          Membatalkan...
+                        </>
+                      ) : (
+                        "Batalkan Booking"
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
-          )}
-          {!booking.isReturned && currentStatus === "CANCELLED" && (
-            <div style={{ marginTop: "20px", marginBottom: "70px" }}>
-              <button
-                style={{
-                  backgroundColor: "#007BFF",
-                  color: "white",
-                  padding: "10px 20px",
-                  borderRadius: "5px",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  navigate(`/return/${booking.id}`);
-                }}
-              >
-                Pengembalian Barang
-              </button>
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

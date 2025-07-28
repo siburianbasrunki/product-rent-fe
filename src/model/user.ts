@@ -4,12 +4,10 @@ export interface UserModel {
     email: string;
     phoneNumber: string;
     role: string;
-    imageUrl: string;
+    img: string;
 }
 
 export interface UpdateUserPayload {
-  name?: string;
-  phoneNumber?: string;
-  role?: string;
+  username?: string;
   image?: File | null;
 }

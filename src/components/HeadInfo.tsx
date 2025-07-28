@@ -1,13 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { useUserById } from "../hook/user";
+import { useProfile } from "../hook/user";
+import imgProfile from '../assets/download (5).jpg'
 
 const HeadInfoAccount = () => {
   const navigate = useNavigate();
-  const { user, setToken, token } = useAuth();
-  const { data } = useUserById();
-  console.log(`token: ${token}`);
-  console.log(`setToken: ${setToken}`);
+  const { data: user } = useProfile();
+  console.log('user', user);
+  
 
   return (
     <div className="sticky top-0 left-0 right-0 z-50 ">
@@ -22,7 +21,7 @@ const HeadInfoAccount = () => {
           onClick={() => {
             navigate("/profile");
           }}
-          src={data?.imageUrl || ""}
+          src={user?.img || imgProfile}
           alt="user"
           className="w-10 h-10 rounded-full cursor-pointer border-2 border-white object-cover object-center hover:border-[#2A8E9E]"
         />

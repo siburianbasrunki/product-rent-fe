@@ -2,4 +2,8 @@
 
 body {
   font-family: 'poppins';
+  background-image: url('./assets/grid-pattern.svg');
+  background-size: cover;
+  background-repeat: repeat;
+
 }

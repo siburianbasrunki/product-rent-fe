@@ -1,25 +1,31 @@
 import { useState, useRef, type ChangeEvent, useEffect } from "react";
 import { useUpdateUser } from "../../hook/user";
 import { BiSolidEdit } from "react-icons/bi";
-import { FaTimes } from "react-icons/fa";
+import { FaTimes, FaSpinner } from "react-icons/fa";
 import Modal from "./modal";
+import { useUploadImage } from "../../hook/booking";
 
 interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentUser: {
     name: string;
-    phoneNumber?: string;
-    imageUrl?: string;
+    img?: string;
   };
 }
 
-const EditProfileModal = ({ isOpen, onClose, currentUser }: EditProfileModalProps) => {
+const EditProfileModal = ({
+  isOpen,
+  onClose,
+  currentUser,
+}: EditProfileModalProps) => {
   const [name, setName] = useState(currentUser.name);
-  const [phoneNumber, setPhoneNumber] = useState(currentUser.phoneNumber || "");
-  const [imagePreview, setImagePreview] = useState(currentUser.imageUrl || "");
+  const [imagePreview, setImagePreview] = useState(currentUser.img || "");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { mutateAsync: uploadImage } = useUploadImage();
+  const [isUploading, setIsUploading] = useState(false);
+
   const { mutate: updateUser, isPending } = useUpdateUser();
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -30,103 +36,129 @@ const EditProfileModal = ({ isOpen, onClose, currentUser }: EditProfileModalProp
     }
   };
 
-  const handleSubmit = () => {
-    const formData = new FormData();
-    if (name) formData.append("name", name);
-    if (phoneNumber) formData.append("phoneNumber", phoneNumber);
-    if (imageFile) formData.append("image", imageFile);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setIsUploading(true);
+      
+      let imgUrl: string | undefined;
+      if (imageFile) {
+        const { url } = await uploadImage(imageFile);
+        imgUrl = url;
+      }
 
-    updateUser(formData, {
-      onSuccess: () => {
-        onClose();
-      },
-    });
+      const payload: { username: string; img?: string } = {
+        username: name
+      };
+
+      if (imgUrl || currentUser.img) {
+        payload.img = imgUrl || currentUser.img;
+      }
+
+      updateUser(payload, {
+        onSuccess: () => {
+          onClose();
+        },
+        onError: (error) => {
+          console.error("Update error:", error);
+        }
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
+
   useEffect(() => {
-  setName(currentUser.name);
-  setPhoneNumber(currentUser.phoneNumber || "");
-  setImagePreview(currentUser.imageUrl || "");
-}, [currentUser]);
+    setName(currentUser.name);
+    setImagePreview(currentUser.img || "");
+  }, [currentUser]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Edit Profile</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold text-[#033247]">Edit Profile</h2>
+          <button
+            onClick={onClose}
+            className="text-[#2A8E9E] hover:text-[#033247] transition-colors duration-300"
+          >
             <FaTimes size={20} />
           </button>
         </div>
 
-        <div className="flex flex-col items-center mb-4">
-          <div className="relative">
-            <img
-              src={imagePreview || "/default-avatar.png"}
-              alt="Profile"
-              className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
-            />
-            <button
-              onClick={triggerFileInput}
-              className="absolute bottom-0 right-0 bg-blue-500 text-white p-2 rounded-full"
-            >
-              <BiSolidEdit size={16} />
-            </button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImageChange}
-              accept="image/*"
-              className="hidden"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Name
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-col items-center mb-6">
+            <div className="relative group">
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#2A8E9E] shadow-md">
+                <img
+                  src={imagePreview || "/default-avatar.png"}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={triggerFileInput}
+                className="absolute -bottom-2 -right-2 bg-gradient-to-r from-[#033247] to-[#2A8E9E] text-white p-2 rounded-full shadow-lg hover:from-[#033247]/90 hover:to-[#2A8E9E]/90 transition-all duration-300"
+              >
+                <BiSolidEdit size={18} />
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                accept="image/*"
+                className="hidden"
+              />
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Phone Number
-            </label>
-            <input
-              type="text"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
-          </div>
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-[#033247] mb-2">
+                Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full p-3 border border-[#2A8E9E]/30 rounded-lg focus:ring-2 focus:ring-[#2A8E9E] focus:border-transparent"
+                required
+              />
+            </div>
 
-          <div className="flex justify-end space-x-2 pt-4">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-              disabled={isPending}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSubmit}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-blue-300"
-              disabled={isPending}
-            >
-              {isPending ? "Saving..." : "Save Changes"}
-            </button>
+            <div className="flex justify-end space-x-3 pt-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-6 py-2.5 bg-white text-[#033247] rounded-lg border border-[#2A8E9E] hover:bg-[#E9F3F4] transition-colors duration-300"
+                disabled={isPending || isUploading}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-6 py-2.5 bg-gradient-to-r from-[#033247] to-[#2A8E9E] text-white rounded-lg hover:from-[#033247]/90 hover:to-[#2A8E9E]/90 transition-all duration-300 shadow-md disabled:opacity-70"
+                disabled={isPending || isUploading}
+              >
+                {isPending || isUploading ? (
+                  <span className="flex items-center justify-center">
+                    <FaSpinner className="animate-spin mr-2" />
+                    Saving...
+                  </span>
+                ) : (
+                  "Save Changes"
+                )}
+              </button>
+            </div>
           </div>
-        </div>
+        </form>
       </div>
     </Modal>
   );

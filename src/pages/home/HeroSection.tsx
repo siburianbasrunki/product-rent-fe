@@ -1,38 +1,43 @@
-import { EmptyState } from "../../components/EmptyState";
-import { CardSkeleton } from "../../components/Skeleton";
-import { useBanner } from "../../hook/banner";
+// import { EmptyState } from "../../components/EmptyState";
+// import { CardSkeleton } from "../../components/Skeleton";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useRef, useState, useEffect } from "react";
+import { useBanner } from "../../hook/banner";
 
 const HeroSection = () => {
-  const { data, isLoading, isError, error } = useBanner();
   const sliderRef = useRef<Slider>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [progress, setProgress] = useState(0);
-
-  const dummyData = [
+  const { data: banner } = useBanner();
+  const apiBannerData =
+    banner?.map((item: any) => ({
+      imageUrl: item.Img,
+      title: item.Name,
+      subTitle: "Promo Spesial dari Kami",
+    })) ?? [];
+  const bannerData = [
+    ...apiBannerData,
     {
-      imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=200&fit=crop",
-      title: "Selamat Datang di Website Kami",
-      subTitle: "Temukan pengalaman terbaik bersama kami"
+      imageUrl:
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=200&fit=crop",
+      title: "Dapatkan Product Terbaik",
+      subTitle: "Produk berkualitas dengan harga terjangkau",
     },
     {
-      imageUrl: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=200&fit=crop",
-      title: "Jelajahi Fitur Terbaru",
-      subTitle: "Inovasi terdepan untuk kebutuhan Anda"
+      imageUrl:
+        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=200&fit=crop",
+      title: "Transaksi Aman 100%",
+      subTitle: "Dapatkan kemudahan dalam transaksi online",
     },
     {
-      imageUrl: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=200&fit=crop",
-      title: "Bergabunglah dengan Komunitas",
-      subTitle: "Bersama membangun masa depan yang lebih baik"
-    }
+      imageUrl:
+        "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=800&h=200&fit=crop",
+      title: "Best Price",
+      subTitle: "Harga terjangkau dengan kualitas terbaik",
+    },
   ];
-
-  const originalData = Array.isArray(data) ? data : data ? [data] : [];
-  const bannerData = originalData.length > 0 ? [...originalData, ...dummyData.slice(0, 2)] : dummyData;
-
   useEffect(() => {
     if (bannerData.length <= 1) return;
 
@@ -42,15 +47,12 @@ const HeroSection = () => {
           sliderRef.current?.slickNext();
           return 0;
         }
-        return prev + 1; 
+        return prev + 1;
       });
     }, 50);
 
     return () => clearInterval(interval);
   }, [bannerData.length, currentSlide]);
-
-  if (isLoading) return <CardSkeleton />;
-  if (isError) return <EmptyState title={error.message} />;
 
   const settings = {
     dots: false,
@@ -58,9 +60,9 @@ const HeroSection = () => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    autoplay: false, 
+    autoplay: false,
     arrows: false,
-    beforeChange: ( newIndex: number) => {
+    beforeChange: (_: number, newIndex: number) => {
       setCurrentSlide(newIndex);
       setProgress(0);
     },
@@ -121,21 +123,21 @@ const HeroSection = () => {
               {bannerData.length > 1 && (
                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-2">
                   <div className="w-32 h-1 bg-white/30 rounded-full overflow-hidden">
-                    <div 
+                    <div
                       className="h-full bg-white transition-all duration-75 ease-linear"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
-                  
+
                   <div className="flex space-x-2">
                     {bannerData.map((_, index) => (
                       <button
                         key={index}
                         onClick={() => handleDotClick(index)}
                         className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                          index === currentSlide 
-                            ? 'bg-white' 
-                            : 'bg-white/50 hover:bg-white/75'
+                          index === currentSlide
+                            ? "bg-white"
+                            : "bg-white/50 hover:bg-white/75"
                         }`}
                         aria-label={`Go to slide ${index + 1}`}
                       />

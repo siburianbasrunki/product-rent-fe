@@ -10,8 +10,6 @@ import Home from "./pages/home/Home";
 import Profile from "./pages/profile/Profile";
 import BottomNav from "./components/NavigationBotton";
 import { BookingPage } from "./pages/booking";
-import CameraDetail from "./pages/Camera/DetailCamera";
-import CameraListPage from "./pages/Camera/ListCamera";
 import { CreateBooking } from "./pages/booking/CreateBooking";
 import { BalancePage } from "./pages/balance/balance";
 import { LoginPage } from "./pages/login";
@@ -22,6 +20,8 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { BookingDetail } from "./pages/booking/BookingDetails";
 import { ConfirmationProvider } from "./components/PopUp";
 import { ReturnCamera } from "./pages/booking/ReturnCameraBook";
+import ProductListPage from "./pages/Product/ListProduct";
+import ProductDetail from "./pages/Product/DetailProduct";
 
 const queryClient = new QueryClient();
 
@@ -37,12 +37,10 @@ const AppContent = () => {
       <div className="max-w-md mx-auto w-full flex-1 flex flex-col shadow-xl relative">
         <main className="flex-1 overflow-y-auto">
           <Routes>
-            {/* Public Routes - tidak perlu login */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/otp" element={<OtpPage />} />
             <Route path="/register" element={<RegisterPage />} />
 
-            {/* Protected Routes - semua route lainnya */}
             <Route
               path="/"
               element={
@@ -52,18 +50,18 @@ const AppContent = () => {
               }
             />
             <Route
-              path="/camera"
+              path="/product"
               element={
                 <ProtectedRoute>
-                  <CameraListPage />
+                  <ProductListPage />
                 </ProtectedRoute>
               }
             />
             <Route
-              path="/camera/:id"
+              path="/product/:id"
               element={
                 <ProtectedRoute>
-                  <CameraDetail />
+                  <ProductDetail />
                 </ProtectedRoute>
               }
             />

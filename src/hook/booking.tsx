@@ -3,6 +3,20 @@ import { useAuth } from "../context/AuthContext";
 import BookingService from "../service/booking";
 import { useNavigate } from "react-router-dom";
 
+// export const useCreateBooking = () => {
+//   const queryClient = useQueryClient();
+//   const navigate = useNavigate();
+  
+//   return useMutation({
+//     mutationFn: (params: { product_id: string; type: number }) => 
+//       BookingService.createBooking(params),
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ['bookings'] });
+//       navigate("/product");
+//     },
+//   });
+// };
+
 export const useCreateBooking = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -22,6 +36,17 @@ export const useUserBookings = () => {
   });
 };
 
+export const useBookingHistory = () => {
+  return useQuery({
+    queryKey: ['bookingHistory'],
+    queryFn: BookingService.getHistoryPayment,
+  });
+};
+export const useUploadImage = () => {
+  return useMutation({
+    mutationFn: (file: File) => BookingService.uploadImage(file),
+  });
+};
 export const useBookingById = (id: string) => {
   return useQuery({
     queryKey: ['bookings', id],

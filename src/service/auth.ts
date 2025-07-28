@@ -4,6 +4,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  img: string;
   // level: number
 }
 
@@ -66,18 +67,17 @@ const AuthService = {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, code , level: 1 }),
+      body: JSON.stringify({ email, code, level: 1 }),
     });
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const json = await res.json();
     return json.data;
   },
-
-  async getCurrentUser(token: string): Promise<User> {
-    const { auth } = getEndpoints();
-    const res = await fetch(`${auth}/me`, {
+  async getProfile(): Promise<User> {
+    const { user } = getEndpoints();
+    const res = await fetch(`${user}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);

@@ -38,3 +38,33 @@ export interface Payment {
   createdAt: Date | string;
   updatedAt: Date | string;
 }
+
+export interface HistoryPayment {
+  order_id: string;
+  name: string;
+  price: number;
+  img: string;
+  status: string;
+  method: string;
+  book_date: string;
+  expired_date: string;
+}
+
+export interface BookingDetailModel{
+  id: string;
+  user_id: string;
+  username: string;
+  email: string;
+  payment_id: string;
+  order_id: string;
+  product_detail: {
+    name: string;
+    price: number;
+    description: string[]
+  }
+  virtual_account_id: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  expired_at: string;
+}

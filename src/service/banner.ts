@@ -2,7 +2,7 @@ import { getEndpoints } from "../config/config";
 import type { BannerModel } from "../model/banner";
 
 const BannerService = {
-  async getBanner(): Promise<BannerModel> {
+  async getBanner(): Promise<BannerModel[]> {
     const { banner} = getEndpoints();
     const url = banner;
     const res = await fetch(url);
