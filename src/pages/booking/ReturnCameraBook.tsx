@@ -71,25 +71,25 @@ export const ReturnCamera = () => {
         <div className="bg-gray-50 p-6 rounded-lg mb-6">
           <div className="flex items-center mb-4">
             <FaCamera className="text-indigo-500 mr-3 text-xl" />
-            <h2 className="text-lg font-semibold">{booking.camera.name}</h2>
+            <h2 className="text-lg font-semibold">{booking.product_detail.name}</h2>
           </div>
 
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-600">Tanggal Mulai</span>
               <span className="font-medium">
-                {new Date(booking.startDate).toLocaleDateString("id-ID")}
+                {new Date(booking.created_at).toLocaleDateString("id-ID")}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Tanggal Selesai</span>
               <span className="font-medium">
-                {new Date(booking.endDate).toLocaleDateString("id-ID")}
+                {new Date(booking.expired_at).toLocaleDateString("id-ID")}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Durasi</span>
-              <span className="font-medium">{booking.duration} hari</span>
+              <span className="font-medium">{booking.created_at} hari</span>
             </div>
           </div>
         </div>

@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import CameraService from "../service/camera";
 import { useParams } from "react-router-dom";
-import ProductService from "../service/product";
 
 export const useCamera = (searchTerm?: string) => {
   return useQuery({
