@@ -28,26 +28,27 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-blue-50 px-4">
-      <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-md">
-        <h2 className="text-2xl font-bold text-blue-700 text-center mb-6">
-          Login
-        </h2>
+    <div className="min-h-screen flex items-center justify-center bg-[#E9F3F4] px-4">
+      <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-md border border-[#2A8E9E]/20">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-[#033247]">Login</h2>
+          <p className="text-[#1D1E20]/60 mt-1">Masukkan email untuk melanjutkan</p>
+        </div>
 
         {error && (
-          <div className="mb-4 p-2 bg-red-100 text-red-700 rounded-md">
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
             {error}
           </div>
         )}
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-sm font-medium text-blue-700 mb-1">
+            <label className="block text-sm font-medium text-[#033247] mb-2">
               Email
             </label>
             <input
               type="email"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-[#2A8E9E]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2A8E9E] focus:border-[#2A8E9E]"
               placeholder="contoh@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -58,24 +59,24 @@ export const LoginPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 font-semibold disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-[#2A8E9E] to-[#033247] text-white py-3 rounded-lg hover:shadow-lg transition-all font-medium disabled:opacity-50"
           >
             <div className="flex items-center justify-center gap-2">
               {loading ? (
-                "Sending..."
+                "Mengirim..."
               ) : (
                 <>
                   <IoIosSend className="w-5 h-5" />
-                  Send OTP
+                  Kirim OTP
                 </>
               )}
             </div>
           </button>
         </form>
 
-        <p className="mt-6 text-sm text-center text-blue-600">
+        <p className="mt-6 text-sm text-center text-[#1D1E20]/70">
           Belum punya akun?{" "}
-          <Link to="/register" className="underline font-medium">
+          <Link to="/register" className="text-[#2A8E9E] hover:text-[#033247] font-medium transition-colors">
             Daftar sekarang
           </Link>
         </p>
