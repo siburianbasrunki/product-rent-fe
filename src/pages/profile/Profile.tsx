@@ -4,21 +4,19 @@ import { IoIosArrowForward } from "react-icons/io";
 import { IoLogOutOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { useProfile, useUserById } from "../../hook/user";
+import { useProfile} from "../../hook/user";
 import { useConfirmation } from "../../components/PopUp";
 import { useState } from "react";
 import EditProfileModal from "./editProfile";
-import imgProfile from '../../assets/download (5).jpg'
 
 const Profile = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const { data, isLoading } = useUserById();
-  const { data: user } = useProfile();
+  const { data: user, isLoading } = useProfile();
 
   const { showConfirmation } = useConfirmation();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  
+
   const handleLogout = () => {
     showConfirmation("Apakah Anda yakin ingin logout?", () => {
       logout();
@@ -41,11 +39,11 @@ const Profile = () => {
           <div className="text-center mt-2">
             <h1 className="text-xl font-bold p-4 text-[#033247]">Profile</h1>
           </div>
-          
+
           <div className=" px-4 flex justify-between items-center bg-white rounded-lg mx-4 mt-2 shadow-sm">
             <div className="flex items-center gap-3 p-3">
               <img
-                src={data?.img || imgProfile}
+                src={user?.img || ""}
                 alt="user"
                 className="w-16 h-16 rounded-lg object-cover border-2 border-[#2A8E9E]/30"
               />
@@ -75,15 +73,13 @@ const Profile = () => {
                 <div className="p-2 bg-[#E9F3F4] rounded-lg">
                   <FaClipboardList className="w-5 h-5 text-[#2A8E9E]" />
                 </div>
-                <p className="text-md font-medium text-[#033247]">
-                  My Booking
-                </p>
+                <p className="text-md font-medium text-[#033247]">My Booking</p>
               </div>
               <div>
                 <IoIosArrowForward className="w-5 h-5 text-[#2A8E9E]" />
               </div>
             </div>
-            
+
             <div
               className="flex items-center gap-2 p-3 justify-between cursor-pointer bg-white rounded-lg hover:bg-[#E9F3F4] transition-colors duration-300 shadow-sm"
               onClick={handleLogout}
@@ -92,21 +88,19 @@ const Profile = () => {
                 <div className="p-2 bg-[#E9F3F4] rounded-lg">
                   <IoLogOutOutline className="w-5 h-5 text-[#2A8E9E]" />
                 </div>
-                <p className="text-md font-medium text-[#033247]">
-                  Logout
-                </p>
+                <p className="text-md font-medium text-[#033247]">Logout</p>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
+
       <EditProfileModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         currentUser={{
-          name: user?.name || data?.name || "",
-          img: data?.img || user?.img || "",
+          name: user?.name || "",
+          img: user?.img || "",
         }}
       />
     </>

@@ -2,39 +2,13 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { formatRupiah } from "../../helper/formatRupiah";
 import { EmptyState } from "../../components/EmptyState";
 import { useState } from "react";
-import {
-  FaSpinner,
-  FaSearch,
-  FaStar,
-  // FaChevronLeft,
-  // FaChevronRight,
-} from "react-icons/fa";
+import { FaSpinner, FaSearch, FaStar } from "react-icons/fa";
 import { useDebounce } from "../../hook/debunce";
 import { useProducts } from "../../hook/product";
 import { BiBox } from "react-icons/bi";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
-// const CustomPrevArrow = ({ onClick }: { onClick?: () => void }) => (
-//   <button
-//     onClick={onClick}
-//     className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors"
-//     style={{ zIndex: 2 }}
-//   >
-//     <FaChevronLeft className="text-[#033247] text-sm" />
-//   </button>
-// );
-
-// const CustomNextArrow = ({ onClick }: { onClick?: () => void }) => (
-//   <button
-//     onClick={onClick}
-//     className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors"
-//     style={{ zIndex: 2 }}
-//   >
-//     <FaChevronRight className="text-[#033247] text-sm" />
-//   </button>
-// );
 
 const ProductListPage = () => {
   const navigate = useNavigate();
@@ -56,14 +30,14 @@ const ProductListPage = () => {
     speed: 500,
     slidesToShow: 1.5,
     slidesToScroll: 1,
-    // prevArrow: <CustomPrevArrow />,
-    // nextArrow: <CustomNextArrow />,
+    arrows: false, 
     responsive: [
       {
         breakpoint: 640,
         settings: {
           slidesToShow: 1.2,
           slidesToScroll: 1,
+          arrows: false
         },
       },
       {
@@ -71,6 +45,7 @@ const ProductListPage = () => {
         settings: {
           slidesToShow: 1.8,
           slidesToScroll: 1,
+          arrows: false
         },
       },
     ],
@@ -87,26 +62,21 @@ const ProductListPage = () => {
   }
 
   return (
-    <div className="min-h-screen  bg-[#E9F3F4] flex-1 flex flex-col pb-20">
+    <div className="min-h-screen bg-[#E9F3F4] flex-1 flex flex-col pb-20">
       <div className="p-6">
-        <div
-          className="flex items-center gap-3 mb-8"
-          style={{ animation: "fadeIn 0.6s ease-out forwards" }}
-        >
-          <div className="p-3 bg-[#033247] rounded-xl shadow-lg">
+        <div className="flex items-center gap-3 mb-8 animate-fadeIn">
+          <div className="p-3 bg-[#033247] rounded-xl shadow-lg transform transition-transform hover:scale-105">
             <BiBox className="text-white text-xl" />
           </div>
           <div>
+            <h1 className="text-xl font-bold text-[#033247]">Product Rental</h1>
             <p className="text-[#1D1E20]/60">
               Find your perfect product to rent
             </p>
           </div>
         </div>
 
-        <div
-          className="mb-8 relative"
-          style={{ animation: "fadeIn 0.6s ease-out forwards" }}
-        >
+        <div className="mb-8 relative animate-fadeIn">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
               <FaSearch className="text-[#1D1E20]/40" />
@@ -114,7 +84,7 @@ const ProductListPage = () => {
             <input
               type="text"
               placeholder="Search products..."
-              className="w-full py-4 pl-12 pr-12 rounded-2xl border-none bg-white shadow-md focus:ring-2 focus:ring-[#2A8E9E] text-[#1D1E20] placeholder-[#1D1E20]/40"
+              className="w-full py-4 pl-12 pr-12 rounded-2xl border-none bg-white shadow-md focus:ring-2 focus:ring-[#2A8E9E] text-[#1D1E20] placeholder-[#1D1E20]/40 transition-all duration-300 hover:shadow-lg"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -129,10 +99,7 @@ const ProductListPage = () => {
         </div>
 
         {debouncedSearchTerm && (
-          <p
-            className="text-sm text-[#1D1E20]/70 mb-6 px-2"
-            style={{ animation: "fadeIn 0.6s ease-out forwards" }}
-          >
+          <p className="text-sm text-[#1D1E20]/70 mb-6 px-2 animate-fadeIn">
             Showing results for:{" "}
             <span className="font-medium text-[#033247]">
               "{debouncedSearchTerm}"
@@ -143,11 +110,8 @@ const ProductListPage = () => {
         {isError ? (
           <EmptyState title={error.message} />
         ) : products?.length === 0 ? (
-          <div
-            className="flex flex-col items-center justify-center py-12"
-            style={{ animation: "fadeIn 0.6s ease-out forwards" }}
-          >
-            <div className="p-6 bg-white rounded-full shadow-lg mb-4">
+          <div className="flex flex-col items-center justify-center py-12 animate-fadeIn">
+            <div className="p-6 bg-white rounded-full shadow-lg mb-4 transform transition-transform hover:scale-110">
               <BiBox className="text-4xl text-[#2A8E9E]" />
             </div>
             <h3 className="text-xl font-bold text-[#033247] mb-2">
@@ -165,20 +129,21 @@ const ProductListPage = () => {
           <div className="relative -mx-2">
             <Slider {...sliderSettings}>
               {products?.map((product, index) => (
-                <div key={product.id} className="px-2 ">
+                <div key={product.id} className="px-2">
                   <div
-                    className="bg-gradient-to-r from-[#033247] to-[#2A8E9E] rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border border-[#033247]"
+                    className="bg-gradient-to-r from-[#033247] to-[#2A8E9E] rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border border-[#033247] relative group"
                     style={{
                       animationDelay: `${index * 0.05}s`,
                       animation: "fadeIn 0.6s ease-out forwards",
                     }}
+                    // onClick={() => navigate(`/product/${product.id}`)}
                   >
                     <div className="relative">
-                      <div className="w-full h-40 flex items-center justify-center bg-[#E9F3F4] relative overflow-hidden">
+                      <div className="w-full h-40 flex items-center justify-center bg-[#E9F3F4] relative overflow-hidden group-hover:bg-[#D4E7E9] transition-colors duration-300">
                         <img
                           src={product.img}
                           alt={product.name}
-                          className="max-h-full max-w-full object-contain p-3"
+                          className="max-h-full max-w-full object-contain p-3 transition-transform duration-500 group-hover:scale-105"
                         />
 
                         {!product.available && (
@@ -199,37 +164,21 @@ const ProductListPage = () => {
                     <div className="p-3">
                       <div className="mb-2">
                         <div className="flex items-center gap-2 mb-1">
-                          <span
-                            className="text-xs text-[#E9F3F4] font-medium"
-                            style={{
-                              display: "-webkit-box",
-                              WebkitLineClamp: 1,
-                              WebkitBoxOrient: "vertical",
-                              overflow: "hidden",
-                            }}
-                          >
+                          <span className="text-xs text-[#E9F3F4]/80 font-medium truncate">
                             {product.category}
                           </span>
                         </div>
-                        <h3
-                          className="text-sm font-semibold text-[#E9F3F4] leading-tight"
-                          style={{
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                          }}
-                        >
+                        <h3 className="text-sm font-semibold text-white leading-tight line-clamp-2">
                           {product.name}
                         </h3>
                       </div>
 
                       <div className="flex justify-between items-center">
                         <div>
-                          <p className="text-xs text-[#E9F3F4] font-medium">
+                          <p className="text-xs text-[#E9F3F4]/80 font-medium">
                             Daily rate
                           </p>
-                          <p className="text-base font-bold text-[#E9F3F4]">
+                          <p className="text-base font-bold text-white">
                             {formatRupiah(product.price)}
                           </p>
                         </div>
@@ -238,7 +187,7 @@ const ProductListPage = () => {
                             e.stopPropagation();
                             navigate(`/product/${product.id}`);
                           }}
-                          className="px-4 py-1.5 bg-white text-[#033247] rounded-md text-sm font-medium shadow hover:shadow-md transition hover:bg-[#E9F3F4]"
+                          className="px-4 py-1.5 bg-white text-[#033247] rounded-md text-sm font-medium shadow hover:shadow-md transition hover:bg-[#E9F3F4] hover:scale-105 active:scale-95"
                         >
                           Details
                         </button>

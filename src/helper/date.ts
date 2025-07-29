@@ -8,9 +8,9 @@ export const formatDate = (isoDate: string): string => {
   });
 };
 
-export const formatTimeRange = (isoDate: string, durationHours: number): string => {
-  const start = new Date(isoDate);
-  const end = new Date(start.getTime() + durationHours * 60 * 60 * 1000);
+export const formatTimeRange = (startDate: string, endDate: string): string => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
 
   const formatTime = (date: Date) =>
     date.toLocaleTimeString("id-ID", {

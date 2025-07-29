@@ -5,7 +5,7 @@ import { ProductSection } from "./MainProduct";
 
 const Home = () => {
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen bg-teal-50">
       <div className="max-w-md mx-auto min-h-screen flex flex-col shadow-xl">
         <main className="flex-1 pb-16">
           <HeadInfoAccount />
