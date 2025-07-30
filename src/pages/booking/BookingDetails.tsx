@@ -2,7 +2,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   FaCalendarAlt,
   FaClock,
-  FaMoneyBillWave,
   FaSpinner,
   FaArrowLeft,
   FaRegCopy,
@@ -121,54 +120,16 @@ export const BookingDetail = () => {
               )}
             </ul>
           </div>
-          <div className="border-t border-[#2A8E9E]/30 pt-6">
-            {currentStatus === "ACTIVATED" && (
-              <div>
-                <h4 className="font-medium mb-2 text-[#033247]">
-                  Nomor Virtual Account
-                </h4>
-                <div className="bg-[#E9F3F4] p-3 rounded-lg font-mono text-lg flex items-center gap-3">
-                  {booking.virtual_account_id}
-                  <FaRegCopy
-                    className={`text-[#2A8E9E] cursor-pointer ${
-                      copied ? "text-green-500" : ""
-                    }`}
-                    onClick={async () => {
-                      try {
-                        await navigator.clipboard.writeText(
-                          booking.virtual_account_id
-                        );
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 2000);
-                      } catch (err) {
-                        console.error("Failed to copy:", err);
-                      }
-                    }}
-                  />
-                </div>
-                {copied && (
-                  <p className="text-sm text-green-500 mt-2">
-                    Nomor virtual account berhasil disalin
-                  </p>
-                )}
-                
-              </div>
-            )}
-          </div>
-
+          
           <div className="border-t border-[#2A8E9E]/30 pt-6">
             <h3 className="font-medium mb-4 text-[#033247]">
               Detail Pembayaran
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-              {currentStatus === "PENDING" && (
+              {(currentStatus === "PENDING" || currentStatus === "ACTIVATED") && (
                 <div>
-                  <div className="flex items-center mb-2 text-[#033247]">
-                    <FaMoneyBillWave className="text-[#2A8E9E] mr-2" />
-                    <span>Bank Transfer BCA (Bank Central Asia)</span>
-                  </div>
-
+                  
                   <div className="mt-4">
                     <h4 className="font-medium mb-2 text-[#033247]">
                       Nomor Virtual Account
