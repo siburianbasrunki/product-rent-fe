@@ -7,62 +7,16 @@ import {
   FaArrowLeft,
   FaRegCopy,
 } from "react-icons/fa";
-import { useEffect, useState } from "react";
-import {
-  useBookingById,
-  useCancelBooking,
-  useCheckPaymentStatus,
-} from "../../hook/booking";
-import { useConfirmation } from "../../components/PopUp";
+import { useState } from "react";
+import { useBookingById } from "../../hook/booking";
 
 export const BookingDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: booking, isLoading } = useBookingById(id || "");
-  const { mutate: checkPayment, isPending: isCheckingPayment } =
-    useCheckPaymentStatus();
+
   const [copied, setCopied] = useState(false);
-  const { mutate: cancelBooking, isPending: isCancelling } = useCancelBooking();
-  const [paymentStatus, setPaymentStatus] = useState<any>(null);
-  const { showConfirmation } = useConfirmation();
-
-  useEffect(() => {
-    if (booking?.status === "PENDING" && !paymentStatus) {
-      const interval = setInterval(() => {
-        checkPayment(booking.id, {
-          onSuccess: (data) => {
-            setPaymentStatus(data.status);
-            if (data.status === "succeeded") {
-              clearInterval(interval);
-            }
-          },
-        });
-      }, 30000);
-
-      return () => clearInterval(interval);
-    }
-  }, [booking, checkPayment, paymentStatus]);
-
-  const handleCheckPayment = () => {
-    if (!booking) return;
-    checkPayment(booking.id, {
-      onSuccess: (data) => {
-        setPaymentStatus(data.status);
-      },
-    });
-  };
-
-  const handleCancelBooking = () => {
-    if (!booking) return;
-
-    showConfirmation("Apakah Anda yakin ingin membatalkan booking ini?", () => {
-      cancelBooking(booking.id, {
-        onSuccess: () => {
-          navigate("/booking");
-        },
-      });
-    });
-  };
+  const [paymentStatus] = useState<any>(null);
 
   if (isLoading) {
     return (
@@ -167,6 +121,40 @@ export const BookingDetail = () => {
               )}
             </ul>
           </div>
+          <div className="border-t border-[#2A8E9E]/30 pt-6">
+            {currentStatus === "ACTIVATED" && (
+              <div>
+                <h4 className="font-medium mb-2 text-[#033247]">
+                  Nomor Virtual Account
+                </h4>
+                <div className="bg-[#E9F3F4] p-3 rounded-lg font-mono text-lg flex items-center gap-3">
+                  {booking.virtual_account_id}
+                  <FaRegCopy
+                    className={`text-[#2A8E9E] cursor-pointer ${
+                      copied ? "text-green-500" : ""
+                    }`}
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(
+                          booking.virtual_account_id
+                        );
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      } catch (err) {
+                        console.error("Failed to copy:", err);
+                      }
+                    }}
+                  />
+                </div>
+                {copied && (
+                  <p className="text-sm text-green-500 mt-2">
+                    Nomor virtual account berhasil disalin
+                  </p>
+                )}
+                
+              </div>
+            )}
+          </div>
 
           <div className="border-t border-[#2A8E9E]/30 pt-6">
             <h3 className="font-medium mb-4 text-[#033247]">
@@ -242,39 +230,6 @@ export const BookingDetail = () => {
                     </div>
                   )}
                 </div>
-
-                {currentStatus === "PENDING" && (
-                  <div className="mt-6 space-y-3">
-                    <button
-                      onClick={handleCheckPayment}
-                      disabled={isCheckingPayment}
-                      className="w-full bg-gradient-to-r from-[#033247] to-[#2A8E9E] text-white py-2 rounded-lg hover:from-[#033247]/90 hover:to-[#2A8E9E]/90 transition-all duration-300 font-medium disabled:opacity-70 flex items-center justify-center"
-                    >
-                      {isCheckingPayment ? (
-                        <>
-                          <FaSpinner className="animate-spin mr-2" />
-                          Memeriksa...
-                        </>
-                      ) : (
-                        "Periksa Status Pembayaran"
-                      )}
-                    </button>
-                    <button
-                      onClick={handleCancelBooking}
-                      disabled={isCancelling}
-                      className="w-full bg-red-100 text-red-600 py-2 rounded-lg hover:bg-red-200 transition font-medium disabled:bg-red-50 flex items-center justify-center"
-                    >
-                      {isCancelling ? (
-                        <>
-                          <FaSpinner className="animate-spin mr-2" />
-                          Membatalkan...
-                        </>
-                      ) : (
-                        "Batalkan Booking"
-                      )}
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
           </div>

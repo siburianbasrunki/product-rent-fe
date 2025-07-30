@@ -99,13 +99,15 @@ export const CreateBooking = () => {
       <div className="min-h-screen bg-[#E9F3F4] p-4">
         <div className="max-w-md mx-auto">
           <div className="flex items-center mb-6">
-            <Link 
-              to="/product" 
+            <Link
+              to="/product"
               className="mr-4 text-[#2A8E9E] hover:text-[#033247] transition-colors duration-300"
             >
               <FaArrowLeft className="text-lg" />
             </Link>
-            <h1 className="text-2xl font-bold text-[#033247]">Buat Booking Baru</h1>
+            <h1 className="text-2xl font-bold text-[#033247]">
+              Buat Booking Baru
+            </h1>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -226,18 +228,36 @@ export const CreateBooking = () => {
                 Metode Pembayaran
               </label>
               <div className="space-y-2">
-                <label className="flex items-center p-3 border border-[#2A8E9E]/30 rounded-lg cursor-pointer bg-white hover:bg-[#E9F3F4] transition-colors duration-300">
-                  <input
-                    type="radio"
-                    name="type"
-                    value={1}
-                    checked={bookingData.type === 1}
-                    onChange={handleInputChange}
-                    className="mr-2 text-[#2A8E9E] focus:ring-[#2A8E9E]"
-                  />
-                  <FaMoneyBillWave className="mr-2 text-[#2A8E9E]" />
-                  <span className="text-[#033247]">Bank Transfer</span>
-                </label>
+                <div className="space-y-2">
+                  <label className="flex items-center p-3 border border-[#2A8E9E]/30 rounded-lg cursor-pointer bg-white hover:bg-[#E9F3F4] transition-colors duration-300">
+                    <input
+                      type="radio"
+                      name="type"
+                      value={1}
+                      checked={bookingData.type === 1}
+                      onChange={handleInputChange}
+                      className="mr-2 text-[#2A8E9E] focus:ring-[#2A8E9E]"
+                    />
+                    <FaMoneyBillWave className="mr-2 text-[#2A8E9E]" />
+                    <span className="text-[#033247]">
+                      Bank Transfer (Virtual Account)
+                    </span>
+                  </label>
+                </div>
+                <div className="space-y-2">
+                  <label className="flex items-center p-3 border border-[#2A8E9E]/30 rounded-lg cursor-pointer bg-white hover:bg-[#E9F3F4] transition-colors duration-300">
+                    <input
+                      type="radio"
+                      name="type"
+                      value={2}
+                      checked={bookingData.type === 2}
+                      onChange={handleInputChange}
+                      className="mr-2 text-[#2A8E9E] focus:ring-[#2A8E9E]"
+                    />
+                    <FaMoneyBillWave className="mr-2 text-[#2A8E9E]" />
+                    <span className="text-[#033247]">Saldo Rent-App (Rp 300.000)</span>
+                  </label>
+                </div>
               </div>
             </div>
 

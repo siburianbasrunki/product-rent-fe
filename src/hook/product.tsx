@@ -2,13 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import ProductService from "../service/product";
 import { useParams } from "react-router-dom";
 
-export const useProducts = (searchTerm?: string) => {
+export const useProducts = (params?: {
+  search?: string;
+  category_id?: string;
+  sort?: string;
+}) => {
   return useQuery({
-    queryKey: ["products", { search: searchTerm }],
-    queryFn: () => ProductService.getProducts(searchTerm),
+    queryKey: ["products", params],
+    queryFn: () => ProductService.getProducts(params || {}),
   });
-}
-
+};
 export const useProductByid = () => {
   const { id } = useParams<{ id: string }>();
   return useQuery({
@@ -19,4 +22,4 @@ export const useProductByid = () => {
     },
     enabled: !!id,
   });
-}
+};
