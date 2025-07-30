@@ -1,5 +1,5 @@
 import { getEndpoints } from "../config/config";
-import type { DetailProductModel, ProductModel } from "../model/product";
+import type { DetailProductModel, InfoProductBookModel, ProductModel } from "../model/product";
 
 const ProductService = {
   async getProducts(params: {
@@ -34,6 +34,17 @@ const ProductService = {
   async getProductById(id: string): Promise<DetailProductModel> {
     const { product } = getEndpoints();
     const res = await fetch(`${product}/${id}`);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    const json = await res.json();
+    return json.data;
+  },
+  async getInfoProductById(id: string): Promise<InfoProductBookModel> {
+    const { product } = getEndpoints();
+    const res = await fetch(`${product}/book/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const json = await res.json();
     return json.data;

@@ -40,7 +40,7 @@ const BookingService = {
   end_date: string;
   desc: string;
   type: number;
-  file: string;
+  file?: string;
 }): Promise<Booking> {
   const { booking } = getEndpoints();
   const res = await fetch(booking, {

@@ -20,3 +20,10 @@ export interface DetailProductModel {
   created_at: string;
   updated_at: string;
 }
+
+export interface InfoProductBookModel {
+  product_id: string
+  name_product: string
+  price: number
+  is_upload: boolean
+}

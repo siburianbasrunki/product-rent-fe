@@ -5,10 +5,11 @@ import {
   FaMoneyBillWave,
   FaIdCard,
   FaSpinner,
+  FaTimes,
 } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useCreateBooking, useUploadImage } from "../../hook/booking";
-import { useProductByid } from "../../hook/product";
+import { useInfoProductByid, useProductByid } from "../../hook/product";
 
 export const CreateBooking = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export const CreateBooking = () => {
   const { mutate: createBooking, isPending } = useCreateBooking();
   const { mutateAsync: uploadImage } = useUploadImage();
   const { data: productDetail, isLoading } = useProductByid();
+  const { data: infoBook } = useInfoProductByid();
 
   const [bookingData, setBookingData] = useState({
     product_id: id,
@@ -27,6 +29,7 @@ export const CreateBooking = () => {
   const [identityFile, setIdentityFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showUploadField, setShowUploadField] = useState(!infoBook?.is_upload);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -51,14 +54,19 @@ export const CreateBooking = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!identityFile) {
+    if (showUploadField && !identityFile) {
       alert("Please upload your identity proof");
       return;
     }
 
     try {
       setIsUploading(true);
-      const { url: imageUrl } = await uploadImage(identityFile);
+      let imageUrl = "";
+
+      if (identityFile || showUploadField) {
+        const uploadResponse = await uploadImage(identityFile!);
+        imageUrl = uploadResponse.url;
+      }
 
       const payload = {
         product_id: id || bookingData.product_id || "",
@@ -66,7 +74,7 @@ export const CreateBooking = () => {
         end_date: bookingData.end_date,
         desc: bookingData.desc,
         type: bookingData.type,
-        file: imageUrl,
+        ...(imageUrl && { file: imageUrl }), 
       };
 
       createBooking(payload, {
@@ -85,6 +93,18 @@ export const CreateBooking = () => {
       setIsUploading(false);
     }
   };
+
+  const handleReuploadClick = () => {
+    setShowUploadField(true);
+    setIdentityFile(null);
+    setPreviewUrl(null);
+  };
+   const handleCancelReupload = () => {
+    setShowUploadField(false);
+    setIdentityFile(null);
+    setPreviewUrl(null);
+  };
+
 
   if (isLoading) {
     return (
@@ -180,49 +200,74 @@ export const CreateBooking = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1 text-[#033247]">
-                Upload Identitas (KTP/SIM)
-              </label>
-              <div className="border-2 border-dashed border-[#2A8E9E] rounded-lg p-4 text-center bg-white/50 hover:bg-white/70 transition-colors duration-300">
-                {previewUrl ? (
-                  <div className="mb-2">
-                    <img
-                      src={previewUrl}
-                      alt="Identity preview"
-                      className="max-h-40 mx-auto mb-2 rounded"
-                    />
+             {showUploadField ? (
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-sm font-medium text-[#033247]">
+                    Upload Identitas (KTP/SIM)
+                  </label>
+                  {infoBook?.is_upload && (
                     <button
                       type="button"
-                      onClick={() => {
-                        setIdentityFile(null);
-                        setPreviewUrl(null);
-                      }}
-                      className="text-[#E74C3C] text-sm hover:text-[#C0392B] transition-colors duration-300"
+                      onClick={handleCancelReupload}
+                      className="text-sm text-[#E74C3C] hover:text-[#C0392B] flex items-center transition-colors duration-300"
                     >
-                      Hapus
+                      <FaTimes className="mr-1" /> Batalkan
                     </button>
-                  </div>
-                ) : (
-                  <label className="cursor-pointer">
-                    <div className="flex flex-col items-center">
-                      <FaIdCard className="text-3xl text-[#2A8E9E] mb-2" />
-                      <p className="text-sm text-[#033247]/80">
-                        Klik untuk mengunggah foto KTP/SIM
-                      </p>
+                  )}
+                </div>
+                <div className="border-2 border-dashed border-[#2A8E9E] rounded-lg p-4 text-center bg-white/50 hover:bg-white/70 transition-colors duration-300">
+                  {previewUrl ? (
+                    <div className="mb-2">
+                      <img
+                        src={previewUrl}
+                        alt="Identity preview"
+                        className="max-h-40 mx-auto mb-2 rounded"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIdentityFile(null);
+                          setPreviewUrl(null);
+                        }}
+                        className="text-[#E74C3C] text-sm hover:text-[#C0392B] transition-colors duration-300"
+                      >
+                        Hapus
+                      </button>
                     </div>
-                    <input
-                      type="file"
-                      accept="image/*,.pdf"
-                      onChange={handleFileChange}
-                      className="hidden"
-                      required
-                    />
-                  </label>
-                )}
+                  ) : (
+                    <label className="cursor-pointer">
+                      <div className="flex flex-col items-center">
+                        <FaIdCard className="text-3xl text-[#2A8E9E] mb-2" />
+                        <p className="text-sm text-[#033247]/80">
+                          Klik untuk mengunggah foto KTP/SIM
+                        </p>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        required
+                      />
+                    </label>
+                  )}
+                </div>
               </div>
-            </div>
-
+            ) : infoBook?.is_upload ? (
+              <div className="p-4 border border-[#2A8E9E]/30 rounded-lg bg-white">
+                <p className="text-[#033247] mb-3">
+                  Anda sudah mengunggah identitas.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleReuploadClick}
+                  className="text-sm text-[#2A8E9E] hover:text-[#033247] underline transition-colors duration-300"
+                >
+                  Upload ulang identitas?
+                </button>
+              </div>
+            ) : null}
             <div>
               <label className="block text-sm font-medium mb-1 text-[#033247]">
                 Metode Pembayaran
@@ -255,7 +300,9 @@ export const CreateBooking = () => {
                       className="mr-2 text-[#2A8E9E] focus:ring-[#2A8E9E]"
                     />
                     <FaMoneyBillWave className="mr-2 text-[#2A8E9E]" />
-                    <span className="text-[#033247]">Saldo Rent-App (Rp 300.000)</span>
+                    <span className="text-[#033247]">
+                      Saldo Rent-App (Rp 300.000)
+                    </span>
                   </label>
                 </div>
               </div>

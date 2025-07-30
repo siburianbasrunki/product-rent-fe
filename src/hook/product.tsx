@@ -23,3 +23,14 @@ export const useProductByid = () => {
     enabled: !!id,
   });
 };
+export const useInfoProductByid = () => {
+  const { id } = useParams<{ id: string }>();
+  return useQuery({
+    queryKey: ["infoproduct", id],
+    queryFn: () => {
+      if (!id) throw new Error("No ID provided");
+      return ProductService.getInfoProductById(id);
+    },
+    enabled: !!id,
+  });
+}
