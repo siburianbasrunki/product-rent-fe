@@ -32,12 +32,14 @@ export const LoginPage = () => {
       <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-md border border-[#2A8E9E]/20">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-[#033247]">Login</h2>
-          <p className="text-[#1D1E20]/60 mt-1">Masukkan email untuk melanjutkan</p>
+          <p className="text-[#1D1E20]/60 mt-1">
+            Masukkan email untuk melanjutkan
+          </p>
         </div>
 
         {error && (
           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
-            {error}
+            {`Email ${email} belum terdaftar. silahkan daftar terlebih dahulu.`}
           </div>
         )}
 
@@ -76,7 +78,10 @@ export const LoginPage = () => {
 
         <p className="mt-6 text-sm text-center text-[#1D1E20]/70">
           Belum punya akun?{" "}
-          <Link to="/register" className="text-[#2A8E9E] hover:text-[#033247] font-medium transition-colors">
+          <Link
+            to="/register"
+            className="text-[#2A8E9E] hover:text-[#033247] font-medium transition-colors"
+          >
             Daftar sekarang
           </Link>
         </p>

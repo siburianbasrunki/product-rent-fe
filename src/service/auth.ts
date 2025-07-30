@@ -32,7 +32,7 @@ const AuthService = {
     const json = await res.json();
 
     if (!res.ok) {
-      const errorMessage = json?.error || `HTTP error! status: ${res.status}`;
+      const errorMessage = json?.message || json?.error || `HTTP error! status: ${res.status}`;
       throw new Error(errorMessage);
     }
 
@@ -51,12 +51,14 @@ const AuthService = {
         level: 1,
       }),
     });
+    
     const json = await res.json();
 
     if (!res.ok) {
-      const errorMessage = json?.error || `HTTP error! status: ${res.status}`;
+      const errorMessage = json?.message || json?.error || `HTTP error! status: ${res.status}`;
       throw new Error(errorMessage);
     }
+    
     return json.data;
   },
 
@@ -69,10 +71,17 @@ const AuthService = {
       },
       body: JSON.stringify({ email, code, level: 1 }),
     });
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    
     const json = await res.json();
+    
+    if (!res.ok) {
+      const errorMessage = json?.message || json?.error || `HTTP error! status: ${res.status}`;
+      throw new Error(errorMessage);
+    }
+    
     return json.data;
   },
+
   async getProfile(): Promise<User> {
     const { user } = getEndpoints();
     const res = await fetch(`${user}`, {
@@ -80,8 +89,14 @@ const AuthService = {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    
     const json = await res.json();
+    
+    if (!res.ok) {
+      const errorMessage = json?.message || json?.error || `HTTP error! status: ${res.status}`;
+      throw new Error(errorMessage);
+    }
+    
     return json.data;
   },
 };
