@@ -36,7 +36,7 @@ export const BookingDetail = () => {
   const currentStatus = paymentStatus || booking.status;
 
   return (
-    <div className="min-h-screen bg-[#E9F3F4] p-4">
+    <div className="min-h-screen bg-white p-4">
       <div className="max-w-2xl mx-auto">
         <button
           onClick={() => navigate("/booking")}
