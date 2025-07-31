@@ -4,7 +4,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { IoLogOutOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { useProfile} from "../../hook/user";
+import { useProfile } from "../../hook/user";
 import { useConfirmation } from "../../components/PopUp";
 import { useState } from "react";
 import EditProfileModal from "./editProfile";
@@ -34,7 +34,7 @@ const Profile = () => {
 
   return (
     <>
-      <div className="bg-[#E9F3F4]">
+      <div className="bg-white">
         <div className="max-w-md mx-auto min-h-screen flex flex-col shadow-sm">
           <div className="text-center mt-2">
             <h1 className="text-xl font-bold p-4 text-[#033247]">Profile</h1>

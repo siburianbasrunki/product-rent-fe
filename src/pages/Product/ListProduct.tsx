@@ -2,7 +2,15 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { formatRupiah } from "../../helper/formatRupiah";
 import { EmptyState } from "../../components/EmptyState";
 import { useState } from "react";
-import { FaSpinner, FaSearch, FaStar, FaFilter, FaTimes, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import {
+  FaSpinner,
+  FaSearch,
+  FaStar,
+  FaFilter,
+  FaTimes,
+  FaChevronDown,
+  FaChevronUp,
+} from "react-icons/fa";
 import { useDebounce } from "../../hook/debunce";
 import { useProducts } from "../../hook/product";
 import { BiBox } from "react-icons/bi";
@@ -13,11 +21,11 @@ const ProductListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
   const [searchTerm, setSearchTerm] = useState(initialSearch);
-  const {data: categories} = useCategory();
+  const { data: categories } = useCategory();
   const currentCategory = searchParams.get("category_id") || "";
   const currentSort = searchParams.get("sort") || "";
   const [showFilters, setShowFilters] = useState(false);
-  
+
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const {
     data: products,
@@ -27,7 +35,7 @@ const ProductListPage = () => {
   } = useProducts({
     search: debouncedSearchTerm,
     category_id: currentCategory,
-    sort: currentSort
+    sort: currentSort,
   });
 
   const handleCategoryChange = (categoryId: string) => {
@@ -67,7 +75,7 @@ const ProductListPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#E9F3F4] flex-1 flex flex-col pb-20">
+    <div className="min-h-screen bg-white flex-1 flex flex-col pb-20">
       <div className="p-6">
         <div className="flex items-center gap-3 mb-8 animate-fadeIn">
           <div className="p-3 bg-[#033247] rounded-xl shadow-lg transform transition-transform hover:scale-105">
@@ -118,11 +126,17 @@ const ProductListPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#033247] mb-2">Category</label>
+              <label className="block text-sm font-medium text-[#033247] mb-2">
+                Category
+              </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => handleCategoryChange("")}
-                  className={`py-2 px-3 rounded-lg text-sm ${!currentCategory ? 'bg-[#033247] text-white' : 'bg-[#E9F3F4] text-[#033247]'}`}
+                  className={`py-2 px-3 rounded-lg text-sm ${
+                    !currentCategory
+                      ? "bg-[#033247] text-white"
+                      : "bg-[#E9F3F4] text-[#033247]"
+                  }`}
                 >
                   All
                 </button>
@@ -130,7 +144,11 @@ const ProductListPage = () => {
                   <button
                     key={category.id}
                     onClick={() => handleCategoryChange(category.id)}
-                    className={`py-2 px-3 rounded-lg text-sm truncate ${currentCategory === category.id ? 'bg-[#033247] text-white' : 'bg-[#E9F3F4] text-[#033247]'}`}
+                    className={`py-2 px-3 rounded-lg text-sm truncate ${
+                      currentCategory === category.id
+                        ? "bg-[#033247] text-white"
+                        : "bg-[#E9F3F4] text-[#033247]"
+                    }`}
                   >
                     {category.name}
                   </button>
@@ -139,27 +157,40 @@ const ProductListPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#033247] mb-2">Sort By</label>
+              <label className="block text-sm font-medium text-[#033247] mb-2">
+                Sort By
+              </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => handleSortChange("")}
-                  className={`py-2 px-3 rounded-lg text-sm ${!currentSort ? 'bg-[#033247] text-white' : 'bg-[#E9F3F4] text-[#033247]'}`}
+                  className={`py-2 px-3 rounded-lg text-sm ${
+                    !currentSort
+                      ? "bg-[#033247] text-white"
+                      : "bg-[#E9F3F4] text-[#033247]"
+                  }`}
                 >
                   Default
                 </button>
                 <button
                   onClick={() => handleSortChange("1")}
-                  className={`py-2 px-3 rounded-lg text-sm ${currentSort === "1" ? 'bg-[#033247] text-white' : 'bg-[#E9F3F4] text-[#033247]'}`}
+                  className={`py-2 px-3 rounded-lg text-sm ${
+                    currentSort === "1"
+                      ? "bg-[#033247] text-white"
+                      : "bg-[#E9F3F4] text-[#033247]"
+                  }`}
                 >
                   Price: Low to High
                 </button>
                 <button
                   onClick={() => handleSortChange("2")}
-                  className={`py-2 px-3 rounded-lg text-sm ${currentSort === "2" ? 'bg-[#033247] text-white' : 'bg-[#E9F3F4] text-[#033247]'}`}
+                  className={`py-2 px-3 rounded-lg text-sm ${
+                    currentSort === "2"
+                      ? "bg-[#033247] text-white"
+                      : "bg-[#E9F3F4] text-[#033247]"
+                  }`}
                 >
                   Price: High to Low
                 </button>
-                
               </div>
             </div>
 
@@ -188,10 +219,13 @@ const ProductListPage = () => {
                 </button>
               </div>
             )}
-            
+
             {currentCategory && (
               <div className="flex items-center bg-white rounded-full px-3 py-1 shadow-sm text-sm">
-                <span>Category: {categories?.find(c => c.id === currentCategory)?.name}</span>
+                <span>
+                  Category:{" "}
+                  {categories?.find((c) => c.id === currentCategory)?.name}
+                </span>
                 <button
                   onClick={() => handleCategoryChange("")}
                   className="ml-1 text-[#1D1E20]/60 hover:text-[#033247]"
@@ -200,15 +234,18 @@ const ProductListPage = () => {
                 </button>
               </div>
             )}
-            
+
             {currentSort && (
               <div className="flex items-center bg-white rounded-full px-3 py-1 shadow-sm text-sm">
                 <span>
-                  Sort: {
-                    currentSort === "1" ? "Price: Low to High" :
-                    currentSort === "2" ? "Price: High to Low" :
-                    currentSort === "3" ? "Most Popular" : "Newest First"
-                  }
+                  Sort:{" "}
+                  {currentSort === "1"
+                    ? "Price: Low to High"
+                    : currentSort === "2"
+                    ? "Price: High to Low"
+                    : currentSort === "3"
+                    ? "Most Popular"
+                    : "Newest First"}
                 </span>
                 <button
                   onClick={() => handleSortChange("")}
@@ -249,11 +286,11 @@ const ProductListPage = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {products?.map((product, index) => (
               <div
                 key={product.id}
-                className="bg-gradient-to-r from-[#033247] to-[#2A8E9E] rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer border border-[#033247] relative group"
+                className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer relative group"
                 style={{
                   animationDelay: `${index * 0.05}s`,
                   animation: "fadeIn 0.6s ease-out forwards",
@@ -284,35 +321,31 @@ const ProductListPage = () => {
 
                 <div className="p-3">
                   <div className="mb-2">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs text-[#E9F3F4]/80 font-medium truncate">
-                        {product.category}
-                      </span>
-                    </div>
-                    <h3 className="text-sm font-semibold text-white leading-tight line-clamp-2">
+                    <div className="flex items-center gap-2 mb-1"></div>
+                    <h3 className="text-sm font-semibold text-[#033247] leading-tight line-clamp-2">
                       {product.name}
                     </h3>
                   </div>
 
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="text-xs text-[#E9F3F4]/80 font-medium">
+                      <p className="text-xs text-[#033447] font-medium">
                         Daily rate
                       </p>
-                      <p className="text-base font-bold text-white">
+                      <p className="text-base font-bold text-[#033247]">
                         {formatRupiah(product.price)}
                       </p>
                     </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/product/${product.id}`);
-                      }}
-                      className="px-4 py-1.5 bg-white text-[#033247] rounded-md text-sm font-medium shadow hover:shadow-md transition hover:bg-[#E9F3F4] hover:scale-105 active:scale-95"
-                    >
-                      Details
-                    </button>
                   </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/product/${product.id}`);
+                    }}
+                    className="px-4 py-1.5 w-full bg-white mt-2 text-[#033247] rounded-md text-sm font-medium shadow hover:shadow-md transition hover:bg-[#E9F3F4] hover:scale-105 active:scale-95"
+                  >
+                    Details
+                  </button>
                 </div>
               </div>
             ))}

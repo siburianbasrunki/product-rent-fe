@@ -3,7 +3,7 @@ import { formatRupiah } from "../../helper/formatRupiah";
 import { useNavigate } from "react-router-dom";
 import { CardSkeleton } from "../../components/Skeleton";
 import { EmptyState } from "../../components/EmptyState";
-import { FaCamera, FaStar } from "react-icons/fa";
+import { FaCamera } from "react-icons/fa";
 import { useProducts } from "../../hook/product";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -17,17 +17,16 @@ export const ProductSection = () => {
     dots: false,
     infinite: false,
     speed: 500,
-    slidesToShow: 1.2,
+    slidesToShow: 1.8,
     slidesToScroll: 1,
     arrows: false,
-    
   };
 
   if (isLoading) return <CardSkeleton />;
   if (isError) return <EmptyState title={error.message} />;
 
   return (
-    <div className="p-4 mb-[20px] min-h-screen">
+    <div className="p-4 mb-[50px]">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-2">
           <h2 className="text-md font-bold text-[#033247]">Semua Product</h2>
@@ -54,53 +53,31 @@ export const ProductSection = () => {
             {products?.map((product) => (
               <div key={product.id} className="px-2">
                 <div
-                  onClick={() => navigate(`/camera/${product.id}`)}
-                  className="bg-gradient-to-r from-[#033247] to-[#2A8E9E] rounded-md overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer"
+                  onClick={() => navigate(`/product/${product.id}`)}
+                  className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer border border-[#E9F3F4]"
                 >
-                  <div className="w-full h-48 flex items-center justify-center bg-[#E9F3F4]">
-                    <img
-                      src={product.img}
-                      alt={product.name}
-                      className="max-h-full max-w-full object-contain p-4"
-                    />
+                  <div className="relative">
+                    <div className="w-full h-40 flex items-center justify-center bg-[#E9F3F4] relative">
+                      <img
+                        src={product.img}
+                        alt={product.name}
+                        className="max-h-full max-w-full object-contain p-4"
+                      />
+                    </div>
                   </div>
 
-                  <div className="p-5 text-white">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs font-medium text-[#E9F3F4]">
-                            {product.category}
-                          </span>
-                        </div>
-                        <h3 className="text-lg font-bold text-white line-clamp-1">
-                          {product.name}
-                        </h3>
-                      </div>
-                      <div className="flex items-center gap-1 bg-white/20 px-2 py-1 rounded-full backdrop-blur-sm">
-                        <FaStar className="text-yellow-400 text-xs" />
-                        <span className="text-xs font-bold text-white">
-                          4.8
-                        </span>
-                      </div>
+                  <div className="p-3">
+                    <div className="flex justify-between items-start ">
+                      <h3 className="text-sm font-semibold text-[#033247] line-clamp-2 h-10">
+                        {product.name}
+                      </h3>
                     </div>
 
-                    <div className="flex justify-between items-center mt-4">
-                      <div>
-                        <p className="text-sm text-[#E9F3F4]">Daily rate</p>
-                        <p className="text-lg font-bold text-white">
-                          {formatRupiah(product.price)}
-                        </p>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/product/${product.id}`);
-                        }}
-                        className="px-4 py-1.5 bg-white text-[#033247] rounded-md text-sm font-medium shadow hover:shadow-md transition hover:bg-[#E9F3F4]"
-                      >
-                        Details
-                      </button>
+                    <div>
+                      <p className="text-xs text-[#2A8E9E]">Daily rate</p>
+                      <p className="text-base font-bold text-[#033247]">
+                        {formatRupiah(product.price)}
+                      </p>
                     </div>
                   </div>
                 </div>

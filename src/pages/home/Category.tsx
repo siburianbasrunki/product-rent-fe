@@ -12,18 +12,9 @@ export const CategorySection = () => {
   if (isError) return <EmptyState title={error.message} />;
 
   return (
-    <div className="px-4 py-6">
+    <div className="px-4 py-6 ">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold text-[#033247]">Kategori Produk</h2>
-        {/* {category && category?.length > 0 && (
-          <button
-            onClick={() => navigate("/product")}
-            className="flex items-center gap-2 text-[#2A8E9E] hover:text-[#033247] transition-colors"
-          >
-            <span className="font-medium">Lihat Semua</span>
-            <FaArrowRight className="text-sm" />
-          </button>
-        )} */}
+        <h2 className="text-md font-bold text-[#033247]">Kategori Produk</h2>
       </div>
 
       {category?.length === 0 ? (
@@ -31,7 +22,11 @@ export const CategorySection = () => {
           <p className="text-gray-500">Belum ada kategori tersedia</p>
         </div>
       ) : (
-        <div className={`flex flex-wrap ${category && category?.length < 4 ? 'justify-center' : ''} gap-4`}>
+        <div
+          className={`flex flex-wrap ${
+            category && category?.length < 4 ? "justify-center" : ""
+          } gap-4`}
+        >
           {category?.map((category) => (
             <div
               key={category.id}

@@ -49,7 +49,7 @@ export const BalancePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#E9F3F4] p-6">
+    <div className="min-h-screen bg-white p-6">
       <div className="max-w-md mx-auto">
         <div className="bg-gradient-to-r from-[#033247] to-[#2A8E9E] rounded-2xl shadow-xl overflow-hidden mb-8 text-white">
           <div className="p-6">

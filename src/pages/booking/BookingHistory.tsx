@@ -9,14 +9,14 @@ export const BookingHistory = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#E9F3F4] p-4 flex justify-center items-center">
+      <div className="min-h-screen bg-white p-4 flex justify-center items-center">
         <FaSpinner className="animate-spin text-2xl text-[#2A8E9E]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#E9F3F4] p-4">
+    <div className="min-h-screen bg-white p-4">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-3 mb-8">
           <div>
@@ -29,7 +29,7 @@ export const BookingHistory = () => {
 
         {bookings?.length === 0 ? (
           <div className="text-center py-10 bg-white rounded-xl shadow-sm p-6">
-            <div className="p-4 bg-[#E9F3F4] rounded-full inline-block mb-4">
+            <div className="p-4 bg-white rounded-full inline-block mb-4">
               <FaCamera className="text-2xl text-[#2A8E9E]" />
             </div>
             <p className="text-[#033247]/70">Anda belum memiliki booking</p>
