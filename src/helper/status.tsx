@@ -1,34 +1,54 @@
 import { FaMoneyBillWave, FaQrcode } from "react-icons/fa";
 
 export const getStatusBadge = (status: string) => {
+  const baseClasses = "text-xs font-medium py-1 px-3 rounded-full";
+
   switch (status) {
+    case "ACTIVATED":
+      return (
+        <span
+          className={`${baseClasses} bg-[#E9F3F4] text-[#2A8E9E] border border-[#2A8E9E]`}
+        >
+          Aktif
+        </span>
+      );
     case "PENDING":
       return (
-        <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">
+        <span
+          className={`${baseClasses} bg-yellow-100 text-yellow-800 border border-yellow-200`}
+        >
           Pending
         </span>
       );
-    case "PAID":
+    case "SUCCEEDED":
       return (
-        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
-          Paid
+        <span
+          className={`${baseClasses} bg-green-100 text-green-800 border border-green-200`}
+        >
+          Sukses
         </span>
       );
-    case "CANCELLED":
+    case "FAILED":
       return (
-        <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">
-          Cancelled
+        <span
+          className={`${baseClasses} bg-red-100 text-red-800 border border-red-200`}
+        >
+          gagal
         </span>
       );
-    case "COMPLETED":
+    case "EXPIRED":
       return (
-        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
-          Completed
+        <span
+          className={`${baseClasses} bg-gray-100 text-gray-800 border border-gray-200`}
+        >
+          Kadaluarsa
         </span>
       );
     default:
       return (
-        <span className="bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs">
+        <span
+          className={`${baseClasses} bg-gray-100 text-gray-800 border border-gray-200`}
+        >
           {status}
         </span>
       );

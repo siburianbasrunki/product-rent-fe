@@ -28,11 +28,11 @@ export const BookingHistory = () => {
         </div>
 
         {bookings?.length === 0 ? (
-          <div className="text-center py-10 bg-white rounded-xl shadow-sm p-6">
-            <div className="p-4 bg-white rounded-full inline-block mb-4">
+          <div className="text-center py-10 bg-white rounded-xl border border-[#E9F3F4] p-6">
+            <div className="p-4 bg-[#E9F3F4] rounded-full inline-block mb-4">
               <FaCamera className="text-2xl text-[#2A8E9E]" />
             </div>
-            <p className="text-[#033247]/70">Anda belum memiliki booking</p>
+            <p className="text-[#1D1E20]/70">Anda belum memiliki booking</p>
             <Link
               to="/camera"
               className="text-[#2A8E9E] hover:text-[#033247] transition-colors duration-300 mt-2 inline-block font-medium"
@@ -46,7 +46,7 @@ export const BookingHistory = () => {
               <Link
                 to={`/booking/detail/${booking.order_id}`}
                 key={booking.order_id}
-                className="block border border-[#2A8E9E]/20 rounded-xl p-5 bg-white hover:bg-[#F5FAFB] transition-all duration-300 shadow-sm hover:shadow-md group"
+                className="block border border-[#E9F3F4] rounded-xl p-5 bg-white hover:bg-[#F5FAFB] transition-all duration-300 shadow-sm hover:shadow-md group"
               >
                 <div className="flex gap-4">
                   <div className="flex-shrink-0 w-16 h-16 bg-[#E9F3F4] rounded-lg flex items-center justify-center">

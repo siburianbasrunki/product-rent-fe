@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useProfile } from "../../hook/user";
 
 export const BalancePage = () => {
   const [balance, setBalance] = useState(250000);
@@ -8,6 +9,8 @@ export const BalancePage = () => {
     { id: 1, amount: 100000, date: "01 Aug 2024", time: "14:30" },
     { id: 2, amount: 150000, date: "05 Aug 2024", time: "09:15" },
   ]);
+    const { data: user } = useProfile();
+  
 
   const handleTopUpClick = () => {
     setShowTopUpForm(!showTopUpForm);
@@ -51,7 +54,7 @@ export const BalancePage = () => {
   return (
     <div className="min-h-screen bg-white p-6">
       <div className="max-w-md mx-auto">
-        <div className="bg-gradient-to-r from-[#033247] to-[#2A8E9E] rounded-2xl shadow-xl overflow-hidden mb-8 text-white">
+        <div className="bg-[#033247] rounded-2xl shadow-xl overflow-hidden mb-8 text-white">
           <div className="p-6">
             <div className="flex justify-between items-start mb-8">
               <div>
@@ -85,14 +88,14 @@ export const BalancePage = () => {
 
             <div className="flex justify-between items-end text-sm">
               <p className="opacity-80">Nama Akun</p>
-              <p>Basxxxxzzz</p>
+              <p>{user?.name}</p>
             </div>
           </div>
         </div>
 
         <button
           onClick={handleTopUpClick}
-          className="w-full bg-gradient-to-r from-[#2A8E9E] to-[#033247] text-white py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 font-medium mb-8 flex items-center justify-center gap-2"
+          className="w-full bg-[#2A8E9E] text-white py-3 px-6 rounded-xl shadow-md hover:bg-[#033247] transition-all duration-300 font-medium mb-8 flex items-center justify-center gap-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -110,11 +113,11 @@ export const BalancePage = () => {
         </button>
 
         {showTopUpForm && (
-          <div className="bg-white rounded-2xl shadow-md overflow-hidden mb-8 p-6">
+          <div className="bg-white rounded-2xl shadow-md overflow-hidden mb-8 p-6 border border-[#E9F3F4]">
             <h3 className="font-bold text-lg text-[#033247] mb-4">Isi Saldo</h3>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[#1D1E20] mb-2">
                 Jumlah Top Up
               </label>
               <div className="relative">
@@ -132,7 +135,7 @@ export const BalancePage = () => {
             </div>
 
             <div className="mb-6">
-              <p className="text-sm text-gray-600 mb-3">Pilih nominal:</p>
+              <p className="text-sm text-[#1D1E20] mb-3">Pilih nominal:</p>
               <div className="grid grid-cols-3 gap-3">
                 {[50000, 100000, 150000].map((nominal) => (
                   <button
@@ -155,7 +158,7 @@ export const BalancePage = () => {
               disabled={!amount}
               className={`w-full py-3 px-6 rounded-xl shadow-md font-medium flex items-center justify-center gap-2 ${
                 amount
-                  ? "bg-gradient-to-r from-[#2A8E9E] to-[#033247] text-white hover:shadow-lg"
+                  ? "bg-[#2A8E9E] text-white hover:bg-[#033247] hover:shadow-lg"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
             >
@@ -164,8 +167,8 @@ export const BalancePage = () => {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-          <div className="p-5 border-b border-gray-100">
+        <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#E9F3F4]">
+          <div className="p-5 border-b border-[#E9F3F4]">
             <h3 className="font-bold text-lg text-[#033247]">Riwayat Top Up</h3>
           </div>
 
@@ -174,15 +177,15 @@ export const BalancePage = () => {
               Belum ada riwayat transaksi
             </div>
           ) : (
-            <ul className="divide-y divide-gray-100">
+            <ul className="divide-y divide-[#E9F3F4]">
               {history.map((item) => (
                 <li
                   key={item.id}
-                  className="p-4 hover:bg-gray-50 transition-colors"
+                  className="p-4 hover:bg-[#E9F3F4] transition-colors"
                 >
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="font-medium text-gray-900">Top Up Saldo</p>
+                      <p className="font-medium text-[#1D1E20]">Top Up Saldo</p>
                       <p className="text-sm text-gray-500">
                         {item.date} • {item.time}
                       </p>

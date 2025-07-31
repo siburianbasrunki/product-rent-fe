@@ -116,7 +116,7 @@ export const CreateBooking = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-[#E9F3F4] p-4">
+      <div className="min-h-screen bg-white p-4">
         <div className="max-w-md mx-auto">
           <div className="flex items-center mb-6">
             <Link
@@ -132,7 +132,7 @@ export const CreateBooking = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1 text-[#033247]">
+              <label className="block text-sm font-medium mb-1 text-[#1D1E20]">
                 Tipe Kamera
               </label>
               <input
@@ -140,13 +140,13 @@ export const CreateBooking = () => {
                 name="cameraType"
                 value={productDetail?.name || ""}
                 readOnly
-                className="w-full p-3 border border-[#2A8E9E]/30 rounded-lg bg-white text-[#033247] cursor-not-allowed focus:ring-2 focus:ring-[#2A8E9E] focus:border-transparent"
+                className="w-full p-3 border border-[#E9F3F4] rounded-lg bg-white text-[#1D1E20] cursor-not-allowed focus:ring-2 focus:ring-[#2A8E9E] focus:border-transparent"
               />
             </div>
 
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1 text-[#033247]">
+                <label className="block text-sm font-medium mb-1 text-[#1D1E20]">
                   Tanggal Mulai
                 </label>
                 <div className="relative">
@@ -155,7 +155,7 @@ export const CreateBooking = () => {
                     name="start_date"
                     value={bookingData.start_date}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-[#2A8E9E]/30 rounded-lg pl-10 bg-white text-[#033247] focus:ring-2 focus:ring-[#2A8E9E] focus:border-transparent"
+                    className="w-full p-3 border border-[#E9F3F4] rounded-lg pl-10 bg-white text-[#1D1E20] focus:ring-2 focus:ring-[#2A8E9E] focus:border-transparent"
                     required
                     min={new Date().toISOString().split("T")[0]}
                   />
@@ -164,7 +164,7 @@ export const CreateBooking = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1 text-[#033247]">
+                <label className="block text-sm font-medium mb-1 text-[#1D1E20]">
                   Tanggal Selesai
                 </label>
                 <div className="relative">
@@ -173,7 +173,7 @@ export const CreateBooking = () => {
                     name="end_date"
                     value={bookingData.end_date}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-[#2A8E9E]/30 rounded-lg pl-10 bg-white text-[#033247] focus:ring-2 focus:ring-[#2A8E9E] focus:border-transparent"
+                    className="w-full p-3 border border-[#E9F3F4] rounded-lg pl-10 bg-white text-[#1D1E20] focus:ring-2 focus:ring-[#2A8E9E] focus:border-transparent"
                     required
                     min={
                       bookingData.start_date ||
@@ -186,14 +186,14 @@ export const CreateBooking = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1 text-[#033247]">
+              <label className="block text-sm font-medium mb-1 text-[#1D1E20]">
                 Tujuan Pemakaian
               </label>
               <textarea
                 name="desc"
                 value={bookingData.desc}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-[#2A8E9E]/30 rounded-lg bg-white text-[#033247] focus:ring-2 focus:ring-[#2A8E9E] focus:border-transparent"
+                className="w-full p-3 border border-[#E9F3F4] rounded-lg bg-white text-[#1D1E20] focus:ring-2 focus:ring-[#2A8E9E] focus:border-transparent"
                 rows={4}
                 required
                 placeholder="Contoh: Pemotretan produk, Wedding, dll."
@@ -203,20 +203,20 @@ export const CreateBooking = () => {
              {showUploadField ? (
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="block text-sm font-medium text-[#033247]">
+                  <label className="block text-sm font-medium text-[#1D1E20]">
                     Upload Identitas (KTP/SIM)
                   </label>
                   {infoBook?.is_upload && (
                     <button
                       type="button"
                       onClick={handleCancelReupload}
-                      className="text-sm text-[#E74C3C] hover:text-[#C0392B] flex items-center transition-colors duration-300"
+                      className="text-sm text-red-500 hover:text-red-700 flex items-center transition-colors duration-300"
                     >
                       <FaTimes className="mr-1" /> Batalkan
                     </button>
                   )}
                 </div>
-                <div className="border-2 border-dashed border-[#2A8E9E] rounded-lg p-4 text-center bg-white/50 hover:bg-white/70 transition-colors duration-300">
+                <div className="border-2 border-dashed border-[#2A8E9E] rounded-lg p-4 text-center bg-[#E9F3F4] hover:bg-[#E9F3F4]/70 transition-colors duration-300">
                   {previewUrl ? (
                     <div className="mb-2">
                       <img
@@ -230,7 +230,7 @@ export const CreateBooking = () => {
                           setIdentityFile(null);
                           setPreviewUrl(null);
                         }}
-                        className="text-[#E74C3C] text-sm hover:text-[#C0392B] transition-colors duration-300"
+                        className="text-red-500 text-sm hover:text-red-700 transition-colors duration-300"
                       >
                         Hapus
                       </button>
@@ -239,7 +239,7 @@ export const CreateBooking = () => {
                     <label className="cursor-pointer">
                       <div className="flex flex-col items-center">
                         <FaIdCard className="text-3xl text-[#2A8E9E] mb-2" />
-                        <p className="text-sm text-[#033247]/80">
+                        <p className="text-sm text-[#1D1E20]/80">
                           Klik untuk mengunggah foto KTP/SIM
                         </p>
                       </div>
@@ -255,8 +255,8 @@ export const CreateBooking = () => {
                 </div>
               </div>
             ) : infoBook?.is_upload ? (
-              <div className="p-4 border border-[#2A8E9E]/30 rounded-lg bg-white">
-                <p className="text-[#033247] mb-3">
+              <div className="p-4 border border-[#E9F3F4] rounded-lg bg-[#E9F3F4]">
+                <p className="text-[#1D1E20] mb-3">
                   Anda sudah mengunggah identitas.
                 </p>
                 <button
@@ -269,12 +269,12 @@ export const CreateBooking = () => {
               </div>
             ) : null}
             <div>
-              <label className="block text-sm font-medium mb-1 text-[#033247]">
+              <label className="block text-sm font-medium mb-1 text-[#1D1E20]">
                 Metode Pembayaran
               </label>
               <div className="space-y-2">
                 <div className="space-y-2">
-                  <label className="flex items-center p-3 border border-[#2A8E9E]/30 rounded-lg cursor-pointer bg-white hover:bg-[#E9F3F4] transition-colors duration-300">
+                  <label className="flex items-center p-3 border border-[#E9F3F4] rounded-lg cursor-pointer bg-white hover:bg-[#E9F3F4] transition-colors duration-300">
                     <input
                       type="radio"
                       name="type"
@@ -284,13 +284,13 @@ export const CreateBooking = () => {
                       className="mr-2 text-[#2A8E9E] focus:ring-[#2A8E9E]"
                     />
                     <FaMoneyBillWave className="mr-2 text-[#2A8E9E]" />
-                    <span className="text-[#033247]">
+                    <span className="text-[#1D1E20]">
                       Bank Transfer (Virtual Account)
                     </span>
                   </label>
                 </div>
                 <div className="space-y-2">
-                  <label className="flex items-center p-3 border border-[#2A8E9E]/30 rounded-lg cursor-pointer bg-white hover:bg-[#E9F3F4] transition-colors duration-300">
+                  <label className="flex items-center p-3 border border-[#E9F3F4] rounded-lg cursor-pointer bg-white hover:bg-[#E9F3F4] transition-colors duration-300">
                     <input
                       type="radio"
                       name="type"
@@ -300,7 +300,7 @@ export const CreateBooking = () => {
                       className="mr-2 text-[#2A8E9E] focus:ring-[#2A8E9E]"
                     />
                     <FaMoneyBillWave className="mr-2 text-[#2A8E9E]" />
-                    <span className="text-[#033247]">
+                    <span className="text-[#1D1E20]">
                       Saldo Rent-App (Rp 300.000)
                     </span>
                   </label>
@@ -311,7 +311,7 @@ export const CreateBooking = () => {
             <button
               type="submit"
               disabled={isPending || isUploading}
-              className="w-full bg-gradient-to-r from-[#033247] to-[#2A8E9E] text-white py-3 rounded-lg hover:from-[#033247]/90 hover:to-[#2A8E9E]/90 transition-all duration-300 font-medium disabled:opacity-70 shadow-md hover:shadow-lg"
+              className="w-full bg-[#2A8E9E] text-white py-3 rounded-lg hover:bg-[#033247] transition-all duration-300 font-medium disabled:opacity-70 shadow-md hover:shadow-lg"
             >
               {isPending || isUploading ? (
                 <span className="flex items-center justify-center">

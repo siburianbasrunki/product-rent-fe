@@ -50,7 +50,7 @@ export const BookingDetail = () => {
           Detail Booking
         </h1>
 
-        <div className="border border-[#2A8E9E]/30 rounded-lg p-6 bg-white shadow-sm">
+        <div className="border border-[#2A8E9E]/30 rounded-lg p-6 bg-white shadow-sm ">
           <div className="flex justify-between items-start mb-6">
             <div>
               <h2 className="font-medium text-xl text-[#033247]">
@@ -120,16 +120,16 @@ export const BookingDetail = () => {
               )}
             </ul>
           </div>
-          
+
           <div className="border-t border-[#2A8E9E]/30 pt-6">
             <h3 className="font-medium mb-4 text-[#033247]">
               Detail Pembayaran
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-              {(currentStatus === "PENDING" || currentStatus === "ACTIVATED") && (
+              {(currentStatus === "PENDING" ||
+                currentStatus === "ACTIVATED") && (
                 <div>
-                  
                   <div className="mt-4">
                     <h4 className="font-medium mb-2 text-[#033247]">
                       Nomor Virtual Account
@@ -167,7 +167,7 @@ export const BookingDetail = () => {
                 </div>
               )}
 
-              <div>
+              <div className="mb-[50px]">
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-[#033247]/70">Total Pembayaran</span>

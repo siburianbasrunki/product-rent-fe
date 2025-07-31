@@ -105,7 +105,7 @@ const EditProfileModal = ({
               <button
                 type="button"
                 onClick={triggerFileInput}
-                className="absolute -bottom-2 -right-2 bg-gradient-to-r from-[#033247] to-[#2A8E9E] text-white p-2 rounded-full shadow-lg hover:from-[#033247]/90 hover:to-[#2A8E9E]/90 transition-all duration-300"
+                className="absolute -bottom-2 -right-2 bg-[#2A8E9E] text-white p-2 rounded-full shadow-lg hover:bg-[#033247] transition-all duration-300"
               >
                 <BiSolidEdit size={18} />
               </button>
@@ -121,14 +121,14 @@ const EditProfileModal = ({
 
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-[#033247] mb-2">
+              <label className="block text-sm font-medium text-[#1D1E20] mb-2">
                 Name
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full p-3 border border-[#2A8E9E]/30 rounded-lg focus:ring-2 focus:ring-[#2A8E9E] focus:border-transparent"
+                className="w-full p-3 border border-[#E9F3F4] rounded-lg focus:ring-2 focus:ring-[#2A8E9E] focus:border-transparent"
                 required
               />
             </div>
@@ -137,14 +137,14 @@ const EditProfileModal = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-2.5 bg-white text-[#033247] rounded-lg border border-[#2A8E9E] hover:bg-[#E9F3F4] transition-colors duration-300"
+                className="px-6 py-2.5 bg-white text-[#1D1E20] rounded-lg border border-[#E9F3F4] hover:bg-[#E9F3F4] transition-colors duration-300"
                 disabled={isPending || isUploading}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-6 py-2.5 bg-gradient-to-r from-[#033247] to-[#2A8E9E] text-white rounded-lg hover:from-[#033247]/90 hover:to-[#2A8E9E]/90 transition-all duration-300 shadow-md disabled:opacity-70"
+                className="px-6 py-2.5 bg-[#2A8E9E] text-white rounded-lg hover:bg-[#033247] transition-all duration-300 shadow-md disabled:opacity-70"
                 disabled={isPending || isUploading}
               >
                 {isPending || isUploading ? (
