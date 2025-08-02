@@ -40,31 +40,9 @@ const AppContent = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/otp" element={<OtpPage />} />
             <Route path="/register" element={<RegisterPage />} />
-
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/product"
-              element={
-                <ProtectedRoute>
-                  <ProductListPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/product/:id"
-              element={
-                <ProtectedRoute>
-                  <ProductDetail />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/" element={<Home />} />
+            <Route path="/product" element={<ProductListPage />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
             <Route
               path="/booking/*"
               element={
