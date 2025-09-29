@@ -12,5 +12,6 @@ export function getEndpoints() {
     user: `${BASE_URL}/user`,
     booking: `${BASE_URL}/payment/book`,
     history: `${BASE_URL}/payment/history`,
+    credit: `${BASE_URL}/payment/credit`,
   };
 }

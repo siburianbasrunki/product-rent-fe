@@ -1,20 +1,30 @@
 import { useState } from "react";
 import { useProfile } from "../../hook/user";
 import { AuthMessage } from "../../components/AuthMessage";
+import {
+  useCredit,
+  useHistoryTopUpCredit,
+  useAddCredit,
+} from "../../hook/credit";
+import {
+  formatDateTimeWIB,
+  formatMoneyIDR,
+  getTopupStatusUi,
+  isAwaitingPayment,
+} from "../../helper/topup";
+import toast from "react-hot-toast";
 
 export const BalancePage = () => {
-  const [balance, setBalance] = useState(250000);
+  const { data: credit } = useCredit();
+  const { data: history } = useHistoryTopUpCredit();
+  const addCreditMutation = useAddCredit();
+
   const [showTopUpForm, setShowTopUpForm] = useState(false);
   const [amount, setAmount] = useState("");
-  const [history, setHistory] = useState([
-    { id: 1, amount: 100000, date: "01 Aug 2024", time: "14:30" },
-    { id: 2, amount: 150000, date: "05 Aug 2024", time: "09:15" },
-  ]);
+
   const { data: user } = useProfile();
 
-  const handleTopUpClick = () => {
-    setShowTopUpForm(!showTopUpForm);
-  };
+  const handleTopUpClick = () => setShowTopUpForm(!showTopUpForm);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
@@ -25,30 +35,26 @@ export const BalancePage = () => {
     setAmount(suggestedAmount.toString());
   };
 
-  const handlePay = () => {
-    if (!amount || isNaN(Number(amount))) return;
+  const handlePayNow = async () => {
+    if (!amount) return;
+    const parsed = parseInt(amount, 10);
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+      toast.error("Nominal tidak valid");
+      return;
+    }
 
-    const newAmount = Number(amount);
-    const newBalance = balance + newAmount;
-    const now = new Date();
-    const newHistoryItem = {
-      id: history.length + 1,
-      amount: newAmount,
-      date: now.toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }),
-      time: now.toLocaleTimeString("en-GB", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    };
+    const p = addCreditMutation.mutateAsync({ amount: parsed, type: 1 });
+    toast.promise(p, {
+      loading: "Memproses pembayaran...",
+      success: "Top up berhasil!",
+      error: (err: any) => err?.message ?? "Top up gagal",
+    });
 
-    setBalance(newBalance);
-    setHistory([newHistoryItem, ...history]);
-    setAmount("");
-    setShowTopUpForm(false);
+    try {
+      await p;
+      setShowTopUpForm(false);
+      setAmount("");
+    } catch {}
   };
 
   return (
@@ -86,7 +92,7 @@ export const BalancePage = () => {
               <div className="mb-6">
                 <p className="text-sm opacity-80 mb-1">Saldo Tersedia</p>
                 <p className="text-3xl font-bold tracking-wide">
-                  Rp{balance.toLocaleString("id-ID")}
+                  Rp{credit?.balance?.toLocaleString("id-ID")}
                 </p>
               </div>
 
@@ -162,19 +168,27 @@ export const BalancePage = () => {
               </div>
 
               <button
-                onClick={handlePay}
-                disabled={!amount}
+                onClick={handlePayNow}
+                disabled={!amount || addCreditMutation.isPending}
                 className={`w-full py-3 px-6 rounded-xl shadow-md font-medium flex items-center justify-center gap-2 ${
-                  amount
+                  amount && !addCreditMutation.isPending
                     ? "bg-[#2A8E9E] text-white hover:bg-[#033247] hover:shadow-lg"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
               >
-                Bayar Sekarang
+                {addCreditMutation.isPending
+                  ? "Memproses..."
+                  : "Bayar Sekarang"}
               </button>
+
+              {addCreditMutation.isError && (
+                <p className="mt-3 text-sm text-red-600">
+                  {(addCreditMutation.error as any)?.message ??
+                    "Terjadi kesalahan"}
+                </p>
+              )}
             </div>
           )}
-
           <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#E9F3F4]">
             <div className="p-5 border-b border-[#E9F3F4]">
               <h3 className="font-bold text-lg text-[#033247]">
@@ -182,37 +196,77 @@ export const BalancePage = () => {
               </h3>
             </div>
 
-            {history.length === 0 ? (
+            {history?.length === 0 ? (
               <div className="p-6 text-center text-gray-500">
                 Belum ada riwayat transaksi
               </div>
             ) : (
               <ul className="divide-y divide-[#E9F3F4]">
-                {history.map((item) => (
-                  <li
-                    key={item.id}
-                    className="p-4 hover:bg-[#E9F3F4] transition-colors"
-                  >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medium text-[#1D1E20]">
-                          Top Up Saldo
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {item.date} • {item.time}
-                        </p>
+                {history?.map((item) => {
+                  const statusUi = getTopupStatusUi(item.status);
+                  const showVA =
+                    isAwaitingPayment(item.status) && item.virtual_account_id;
+                  return (
+                    <li
+                      key={item.id}
+                      className="p-4 hover:bg-[#E9F3F4] transition-colors"
+                    >
+                      <div className="flex justify-between items-start gap-4">
+                        <div className="min-w-0">
+                          <p className="font-medium text-[#1D1E20]">
+                            Top Up Saldo
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {formatDateTimeWIB(item.created_at)}
+                          </p>
+
+                          {showVA && (
+                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                              <span className="text-xs text-[#033247] bg-[#E9F3F4] px-2 py-1 rounded">
+                                VA: <strong>{item.virtual_account_id}</strong>
+                              </span>
+
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  try {
+                                    await navigator.clipboard.writeText(
+                                      item.virtual_account_id!
+                                    );
+                                    toast.success("Nomor VA disalin");
+                                  } catch {
+                                    toast.error("Gagal menyalin VA");
+                                  }
+                                }}
+                                className="text-xs border border-[#2A8E9E] text-[#2A8E9E] px-2 py-1 rounded hover:bg-[#2A8E9E] hover:text-white transition"
+                              >
+                                Salin VA
+                              </button>
+                              <span className="text-xs text-gray-500">
+                                {item.expired_at
+                                  ? ` • Exp: ${formatDateTimeWIB(
+                                      item.expired_at
+                                    )}`
+                                  : ""}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <p className="font-bold text-[#2A8E9E]">
+                            +Rp{formatMoneyIDR(item.amount)}
+                          </p>
+                          <span
+                            className={`inline-block mt-1 text-xs font-medium px-2 py-0.5 rounded ${statusUi.className}`}
+                          >
+                            {statusUi.label}
+                          </span>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold text-[#2A8E9E]">
-                          +Rp{item.amount.toLocaleString("id-ID")}
-                        </p>
-                        <p className="text-xs text-green-500 font-medium">
-                          Berhasil
-                        </p>
-                      </div>
-                    </div>
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
