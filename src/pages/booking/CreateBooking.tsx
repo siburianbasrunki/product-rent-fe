@@ -10,6 +10,8 @@ import {
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useCreateBooking, useUploadImage } from "../../hook/booking";
 import { useInfoProductByid, useProductByid } from "../../hook/product";
+import { useCredit } from "../../hook/credit";
+import { formatRupiah } from "../../helper/formatRupiah";
 
 export const CreateBooking = () => {
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ export const CreateBooking = () => {
   const { mutateAsync: uploadImage } = useUploadImage();
   const { data: productDetail, isLoading } = useProductByid();
   const { data: infoBook } = useInfoProductByid();
-
+  const { data: credit } = useCredit();
   const [bookingData, setBookingData] = useState({
     product_id: id,
     start_date: "",
@@ -74,7 +76,7 @@ export const CreateBooking = () => {
         end_date: bookingData.end_date,
         desc: bookingData.desc,
         type: bookingData.type,
-        ...(imageUrl && { file: imageUrl }), 
+        ...(imageUrl && { file: imageUrl }),
       };
 
       createBooking(payload, {
@@ -99,12 +101,11 @@ export const CreateBooking = () => {
     setIdentityFile(null);
     setPreviewUrl(null);
   };
-   const handleCancelReupload = () => {
+  const handleCancelReupload = () => {
     setShowUploadField(false);
     setIdentityFile(null);
     setPreviewUrl(null);
   };
-
 
   if (isLoading) {
     return (
@@ -200,7 +201,7 @@ export const CreateBooking = () => {
               />
             </div>
 
-             {showUploadField ? (
+            {showUploadField ? (
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <label className="block text-sm font-medium text-[#1D1E20]">
@@ -280,7 +281,9 @@ export const CreateBooking = () => {
                       name="type"
                       value={1}
                       checked={bookingData.type === 1}
-                      onChange={handleInputChange}
+                      onChange={() =>
+                        setBookingData((prev) => ({ ...prev, type: 1 }))
+                      }
                       className="mr-2 text-[#2A8E9E] focus:ring-[#2A8E9E]"
                     />
                     <FaMoneyBillWave className="mr-2 text-[#2A8E9E]" />
@@ -296,12 +299,14 @@ export const CreateBooking = () => {
                       name="type"
                       value={2}
                       checked={bookingData.type === 2}
-                      onChange={handleInputChange}
+                      onChange={() =>
+                        setBookingData((prev) => ({ ...prev, type: 2 }))
+                      }
                       className="mr-2 text-[#2A8E9E] focus:ring-[#2A8E9E]"
                     />
                     <FaMoneyBillWave className="mr-2 text-[#2A8E9E]" />
                     <span className="text-[#1D1E20]">
-                      Saldo Rent-App (Rp 300.000)
+                      Saldo Rent-App ({formatRupiah(credit?.balance || 0)})
                     </span>
                   </label>
                 </div>
