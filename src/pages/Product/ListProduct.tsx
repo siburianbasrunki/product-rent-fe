@@ -1,9 +1,8 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { formatRupiah } from "../../helper/formatRupiah";
 import { EmptyState } from "../../components/EmptyState";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
-  FaSpinner,
   FaSearch,
   FaStar,
   FaFilter,
@@ -11,64 +10,95 @@ import {
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
+import { BiBox } from "react-icons/bi";
 import { useDebounce } from "../../hook/debunce";
 import { useProducts } from "../../hook/product";
-import { BiBox } from "react-icons/bi";
 import { useCategory } from "../../hook/categories";
+import {
+  Skeleton,
+  SkeletonCard,
+  SkeletonText,
+} from "../../components/Skeleton";
 
 const ProductListPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+
   const initialSearch = searchParams.get("search") || "";
   const [searchTerm, setSearchTerm] = useState(initialSearch);
+
   const { data: categories } = useCategory();
   const currentCategory = searchParams.get("category_id") || "";
   const currentSort = searchParams.get("sort") || "";
   const [showFilters, setShowFilters] = useState(false);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+  useEffect(() => {
+    const curr = searchParams.get("search") || "";
+    if ((debouncedSearchTerm || "") !== curr) {
+      const next = new URLSearchParams(searchParams);
+      if (debouncedSearchTerm) next.set("search", debouncedSearchTerm);
+      else next.delete("search");
+      setSearchParams(next, { replace: true });
+    }
+  }, [debouncedSearchTerm]);
+
+  const queryParams = useMemo(
+    () => ({
+      search: debouncedSearchTerm || undefined,
+      category_id: currentCategory || undefined,
+      sort: currentSort || undefined,
+    }),
+    [debouncedSearchTerm, currentCategory, currentSort]
+  );
+
   const {
     data: products,
     isLoading,
     isError,
     error,
-  } = useProducts({
-    search: debouncedSearchTerm,
-    category_id: currentCategory,
-    sort: currentSort,
-  });
+    isFetching,
+  } = useProducts(queryParams);
 
   const handleCategoryChange = (categoryId: string) => {
-    const newSearchParams = new URLSearchParams(searchParams);
-    if (categoryId) {
-      newSearchParams.set("category_id", categoryId);
-    } else {
-      newSearchParams.delete("category_id");
-    }
-    setSearchParams(newSearchParams);
+    const next = new URLSearchParams(searchParams);
+    if (categoryId) next.set("category_id", categoryId);
+    else next.delete("category_id");
+    setSearchParams(next);
   };
 
   const handleSortChange = (sortValue: string) => {
-    const newSearchParams = new URLSearchParams(searchParams);
-    if (sortValue) {
-      newSearchParams.set("sort", sortValue);
-    } else {
-      newSearchParams.delete("sort");
-    }
-    setSearchParams(newSearchParams);
+    const next = new URLSearchParams(searchParams);
+    if (sortValue) next.set("sort", sortValue);
+    else next.delete("sort");
+    setSearchParams(next);
   };
 
   const clearFilters = () => {
     setSearchTerm("");
-    const newSearchParams = new URLSearchParams();
-    setSearchParams(newSearchParams);
+    const next = new URLSearchParams();
+    setSearchParams(next);
   };
 
   if (isLoading && !products) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#E9F3F4] to-white p-4 flex justify-center items-center">
-        <div className="animate-spin">
-          <FaSpinner className="text-3xl text-[#2A8E9E]" />
+      <div className="min-h-screen bg-white">
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-8">
+            <Skeleton variant="circle" width={44} height={44} />
+            <div className="flex-1">
+              <SkeletonText lines={2} />
+            </div>
+          </div>
+
+          <Skeleton height={52} className="w-full mb-6" rounded="rounded-xl" />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -88,7 +118,6 @@ const ProductListPage = () => {
             </p>
           </div>
         </div>
-
         <div className="mb-4">
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -205,9 +234,8 @@ const ProductListPage = () => {
           </div>
         )}
 
-        {/* Active Filters */}
         {(currentCategory || currentSort || debouncedSearchTerm) && (
-          <div className="flex flex-wrap gap-2 mb-6 animate-fadeIn">
+          <div className="flex flex-wrap gap-2 mb-6 animate-fadeIn items-center">
             {debouncedSearchTerm && (
               <div className="flex items-center bg-white rounded-full px-3 py-1 shadow-sm text-sm">
                 <span>Search: {debouncedSearchTerm}</span>
@@ -219,7 +247,9 @@ const ProductListPage = () => {
                 </button>
               </div>
             )}
-
+            {isFetching && (
+              <Skeleton width={120} height={16} className="rounded-full" />
+            )}
             {currentCategory && (
               <div className="flex items-center bg-white rounded-full px-3 py-1 shadow-sm text-sm">
                 <span>
@@ -234,7 +264,6 @@ const ProductListPage = () => {
                 </button>
               </div>
             )}
-
             {currentSort && (
               <div className="flex items-center bg-white rounded-full px-3 py-1 shadow-sm text-sm">
                 <span>
@@ -243,8 +272,6 @@ const ProductListPage = () => {
                     ? "Price: Low to High"
                     : currentSort === "2"
                     ? "Price: High to Low"
-                    : currentSort === "3"
-                    ? "Most Popular"
                     : "Newest First"}
                 </span>
                 <button
@@ -256,15 +283,6 @@ const ProductListPage = () => {
               </div>
             )}
           </div>
-        )}
-
-        {debouncedSearchTerm && (
-          <p className="text-sm text-[#1D1E20]/70 mb-6 px-2 animate-fadeIn">
-            Showing results for:{" "}
-            <span className="font-medium text-[#033247]">
-              "{debouncedSearchTerm}"
-            </span>
-          </p>
         )}
 
         {isError ? (
@@ -286,70 +304,70 @@ const ProductListPage = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {products?.map((product, index) => (
-              <div
-                key={product.id}
-                className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer relative group"
-                style={{
-                  animationDelay: `${index * 0.05}s`,
-                  animation: "fadeIn 0.6s ease-out forwards",
-                }}
-              >
-                <div className="relative">
-                  <div className="w-full h-40 flex items-center justify-center bg-[#E9F3F4] relative overflow-hidden group-hover:bg-[#D4E7E9] transition-colors duration-300">
-                    <img
-                      src={product.img}
-                      alt={product.name}
-                      className="max-h-full max-w-full object-contain p-3 transition-transform duration-500 group-hover:scale-105"
-                    />
-
-                    {!product.available && (
-                      <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-md font-medium">
-                        Rented
+          <>
+            {isFetching && (
+              <div className="mb-4">
+                <Skeleton height={10} className="w-full rounded-full" />
+              </div>
+            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {products?.map((product, index) => (
+                <div
+                  key={product.id}
+                  className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer relative group"
+                  style={{
+                    animationDelay: `${index * 0.05}s`,
+                    animation: "fadeIn 0.6s ease-out forwards",
+                  }}
+                >
+                  <div className="relative">
+                    <div className="w-full h-40 flex items-center justify-center bg-[#E9F3F4] relative overflow-hidden group-hover:bg-[#D4E7E9] transition-colors duration-300">
+                      <img
+                        src={product.img}
+                        alt={product.name}
+                        className="max-h-full max-w-full object-contain p-3 transition-transform duration-500 group-hover:scale-105"
+                      />
+                      {!product.available && (
+                        <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-md font-medium">
+                          Rented
+                        </div>
+                      )}
+                      <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-white/90 px-2 py-1 rounded-full backdrop-blur-sm">
+                        <FaStar className="text-yellow-400 text-xs" />
+                        <span className="text-xs font-medium text-[#033247]">
+                          4.8
+                        </span>
                       </div>
-                    )}
-
-                    <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-white/90 px-2 py-1 rounded-full backdrop-blur-sm">
-                      <FaStar className="text-yellow-400 text-xs" />
-                      <span className="text-xs font-medium text-[#033247]">
-                        4.8
-                      </span>
                     </div>
                   </div>
-                </div>
-
-                <div className="p-3">
-                  <div className="mb-2">
-                    <div className="flex items-center gap-2 mb-1"></div>
+                  <div className="p-3">
                     <h3 className="text-sm font-semibold text-[#033247] leading-tight line-clamp-2">
                       {product.name}
                     </h3>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-xs text-[#033447] font-medium">
-                        Daily rate
-                      </p>
-                      <p className="text-base font-bold text-[#033247]">
-                        {formatRupiah(product.price)}
-                      </p>
+                    <div className="flex justify-between items-center mt-2">
+                      <div>
+                        <p className="text-xs text-[#033447] font-medium">
+                          Daily rate
+                        </p>
+                        <p className="text-base font-bold text-[#033247]">
+                          {formatRupiah(product.price)}
+                        </p>
+                      </div>
                     </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/product/${product.id}`);
+                      }}
+                      className="px-4 py-1.5 w-full bg-white mt-2 text-[#033247] rounded-md text-sm font-medium shadow hover:shadow-md transition hover:bg-[#E9F3F4] hover:scale-105 active:scale-95"
+                    >
+                      Details
+                    </button>
                   </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/product/${product.id}`);
-                    }}
-                    className="px-4 py-1.5 w-full bg-white mt-2 text-[#033247] rounded-md text-sm font-medium shadow hover:shadow-md transition hover:bg-[#E9F3F4] hover:scale-105 active:scale-95"
-                  >
-                    Details
-                  </button>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

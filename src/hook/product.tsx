@@ -1,17 +1,31 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import ProductService from "../service/product";
 import { useParams } from "react-router-dom";
+import type { ProductModel } from "../model/product";
 
-export const useProducts = (params?: {
+type ListParams = {
   search?: string;
   category_id?: string;
   sort?: string;
-}) => {
-  return useQuery({
-    queryKey: ["products", params],
+};
+
+export const useProducts = (params?: ListParams) => {
+  const key = [
+    "products",
+    params?.search ?? "",
+    params?.category_id ?? "",
+    params?.sort ?? "",
+  ] as const;
+
+  return useQuery<ProductModel[], Error, ProductModel[], typeof key>({
+    queryKey: key,
     queryFn: () => ProductService.getProducts(params || {}),
+    placeholderData: keepPreviousData,
+    staleTime: 5_000,
+    gcTime: 5 * 60 * 1000,
   });
 };
+
 export const useProductByid = () => {
   const { id } = useParams<{ id: string }>();
   return useQuery({
@@ -23,6 +37,7 @@ export const useProductByid = () => {
     enabled: !!id,
   });
 };
+
 export const useInfoProductByid = () => {
   const { id } = useParams<{ id: string }>();
   return useQuery({
@@ -33,4 +48,4 @@ export const useInfoProductByid = () => {
     },
     enabled: !!id,
   });
-}
+};

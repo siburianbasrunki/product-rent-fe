@@ -1,28 +1,118 @@
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  FaCalendarAlt,
-  FaClock,
-  FaArrowLeft,
-  FaRegCopy,
-} from "react-icons/fa";
+import { FaCalendarAlt, FaClock, FaArrowLeft, FaRegCopy } from "react-icons/fa";
 import { useState } from "react";
 import { useBookingById } from "../../hook/booking";
-import { AuthMessage } from "../../components/AuthMessage"; 
+import { AuthMessage } from "../../components/AuthMessage";
+import { Skeleton } from "../../components/Skeleton";
 
 export const BookingDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: booking } = useBookingById(id || "");
+  const {
+    data: booking,
+    isLoading,
+    isError,
+    error,
+  } = useBookingById(id || "");
 
   const [copied, setCopied] = useState(false);
   const [paymentStatus] = useState<any>(null);
 
+  if (isLoading && !booking) {
+    return (
+      <AuthMessage
+        message="Silakan login untuk melihat detail booking"
+        actionText="Login"
+      >
+        <div className="min-h-screen bg-white p-4">
+          <div className="max-w-2xl mx-auto">
+            <div className="flex items-center text-[#2A8E9E] mb-4">
+              <Skeleton width={90} height={18} className="rounded-full" />
+            </div>
+
+            <Skeleton width={180} height={28} />
+            <div className="border border-[#2A8E9E]/30 rounded-lg p-6 bg-white shadow-sm mt-4 space-y-6">
+              {/* Header: nama produk + tanggal + status */}
+              <div className="flex justify-between items-start">
+                <div className="space-y-2">
+                  <Skeleton width="70%" height={22} />
+                  <div className="flex items-center gap-2">
+                    <Skeleton width={16} height={16} rounded="rounded-full" />
+                    <Skeleton width={180} height={14} />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Skeleton width={16} height={16} rounded="rounded-full" />
+                    <Skeleton width={120} height={14} />
+                  </div>
+                </div>
+                <Skeleton width={160} height={28} rounded="rounded-full" />
+              </div>
+
+              {/* Deskripsi */}
+              <div>
+                <Skeleton width={160} height={18} className="mb-2" />
+                <div className="pl-5 space-y-2">
+                  <Skeleton width="90%" height={12} />
+                  <Skeleton width="80%" height={12} />
+                  <Skeleton width="60%" height={12} />
+                </div>
+              </div>
+
+              {/* VA + Ringkasan Pembayaran */}
+              <div className="border-t border-[#2A8E9E]/30 pt-6 space-y-4">
+                <Skeleton width={180} height={18} />
+                <div className="bg-[#E9F3F4] p-3 rounded-lg flex items-center gap-3">
+                  <Skeleton width="60%" height={20} />
+                  <Skeleton width={20} height={20} rounded="rounded" />
+                </div>
+                <Skeleton width="50%" height={12} />
+
+                <div className="grid grid-cols-1 gap-3 mt-4">
+                  <div className="flex justify-between">
+                    <Skeleton width={160} height={14} />
+                    <Skeleton width={120} height={16} />
+                  </div>
+                  <div className="flex justify-between">
+                    <Skeleton width={160} height={14} />
+                    <Skeleton width={140} height={16} />
+                  </div>
+                  <div className="flex justify-between">
+                    <Skeleton width={200} height={14} />
+                    <Skeleton width={160} height={16} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mb-[50px]" />
+        </div>
+      </AuthMessage>
+    );
+  }
+
+  if (isError) {
+    return (
+      <AuthMessage
+        message="Silakan login untuk melihat detail booking"
+        actionText="Login"
+      >
+        <div className="min-h-screen bg-white p-4">
+          <div className="max-w-2xl mx-auto">
+            <p className="text-red-600">{error.message}</p>
+          </div>
+        </div>
+      </AuthMessage>
+    );
+  }
 
   if (!booking) {
     return (
-      <div className="min-h-screen bg-[#E9F3F4] p-4 flex justify-center items-center">
-        <p className="text-[#033247]">Belum ada booking</p>
-      </div>
+      <AuthMessage
+        message="Silakan login untuk melihat detail booking"
+        actionText="Login"
+      >
+        <div className="min-h-screen bg-white p-4" />
+      </AuthMessage>
     );
   }
 
@@ -46,6 +136,7 @@ export const BookingDetail = () => {
           <h1 className="text-2xl font-bold mb-6 text-[#033247]">
             Detail Booking
           </h1>
+
 
           <div className="border border-[#2A8E9E]/30 rounded-lg p-6 bg-white shadow-sm">
             <div className="flex justify-between items-start mb-6">
@@ -74,6 +165,7 @@ export const BookingDetail = () => {
                   </span>
                 </div>
               </div>
+
               <div className="text-right">
                 <div className="mt-2">
                   {currentStatus === "PENDING" && (
@@ -167,13 +259,17 @@ export const BookingDetail = () => {
                 <div className="mb-[50px]">
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-[#033247]/70">Total Pembayaran</span>
+                      <span className="text-[#033247]/70">
+                        Total Pembayaran
+                      </span>
                       <span className="font-medium text-[#033247]">
                         Rp{booking.product_detail.price.toLocaleString("id-ID")}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#033247]/70">Metode Pembayaran</span>
+                      <span className="text-[#033247]/70">
+                        Metode Pembayaran
+                      </span>
                       <span className="text-[#033247]">Bank Transfer BCA</span>
                     </div>
 
