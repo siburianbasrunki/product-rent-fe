@@ -1,30 +1,26 @@
 import { useState } from "react";
-import { useProfile } from "../../hook/user";
 import { AuthMessage } from "../../components/AuthMessage";
+import { useProfile } from "../../hook/user";
 import {
   useCredit,
   useHistoryTopUpCredit,
   useAddCredit,
 } from "../../hook/credit";
-import {
-  formatDateTimeWIB,
-  formatMoneyIDR,
-  getTopupStatusUi,
-  isAwaitingPayment,
-} from "../../helper/topup";
+import { formatMoneyIDR } from "../../helper/topup";
 import toast from "react-hot-toast";
+import { BalanceTopUp } from "./BalanceTopUp";
+import { BalanceHistory } from "./BalanceHistory";
 
 export const BalancePage = () => {
   const { data: credit } = useCredit();
   const { data: history } = useHistoryTopUpCredit();
   const addCreditMutation = useAddCredit();
+  const { data: user } = useProfile();
 
   const [showTopUpForm, setShowTopUpForm] = useState(false);
   const [amount, setAmount] = useState("");
 
-  const { data: user } = useProfile();
-
-  const handleTopUpClick = () => setShowTopUpForm(!showTopUpForm);
+  const handleTopUpClick = () => setShowTopUpForm((v) => !v);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, "");
@@ -32,7 +28,7 @@ export const BalancePage = () => {
   };
 
   const handleSuggestedAmount = (suggestedAmount: number) => {
-    setAmount(suggestedAmount.toString());
+    setAmount(String(suggestedAmount));
   };
 
   const handlePayNow = async () => {
@@ -54,7 +50,8 @@ export const BalancePage = () => {
       await p;
       setShowTopUpForm(false);
       setAmount("");
-    } catch {}
+    } catch {
+    }
   };
 
   return (
@@ -64,6 +61,7 @@ export const BalancePage = () => {
     >
       <div className="min-h-screen bg-white p-6">
         <div className="max-w-md mx-auto">
+          {/* Card Saldo */}
           <div className="bg-[#033247] rounded-2xl shadow-xl overflow-hidden mb-8 text-white">
             <div className="p-6">
               <div className="flex justify-between items-start mb-8">
@@ -103,6 +101,7 @@ export const BalancePage = () => {
             </div>
           </div>
 
+          {/* Tombol Toggle Top Up */}
           <button
             onClick={handleTopUpClick}
             className="w-full bg-[#2A8E9E] text-white py-3 px-6 rounded-xl shadow-md hover:bg-[#033247] transition-all duration-300 font-medium mb-8 flex items-center justify-center gap-2"
@@ -123,153 +122,25 @@ export const BalancePage = () => {
           </button>
 
           {showTopUpForm && (
-            <div className="bg-white rounded-2xl shadow-md overflow-hidden mb-8 p-6 border border-[#E9F3F4]">
-              <h3 className="font-bold text-lg text-[#033247] mb-4">
-                Isi Saldo
-              </h3>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-[#1D1E20] mb-2">
-                  Jumlah Top Up
-                </label>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                    Rp
-                  </span>
-                  <input
-                    type="text"
-                    value={
-                      amount ? parseInt(amount).toLocaleString("id-ID") : ""
-                    }
-                    onChange={handleAmountChange}
-                    placeholder="Masukkan jumlah"
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2A8E9E] focus:border-[#2A8E9E]"
-                  />
-                </div>
-              </div>
-
-              <div className="mb-6">
-                <p className="text-sm text-[#1D1E20] mb-3">Pilih nominal:</p>
-                <div className="grid grid-cols-3 gap-3">
-                  {[50000, 100000, 150000].map((nominal) => (
-                    <button
-                      key={nominal}
-                      onClick={() => handleSuggestedAmount(nominal)}
-                      className={`py-2 px-3 rounded-lg border ${
-                        amount === nominal.toString()
-                          ? "bg-[#E9F3F4] border-[#2A8E9E] text-[#033247]"
-                          : "border-gray-300 hover:bg-gray-50"
-                      }`}
-                    >
-                      {nominal.toLocaleString("id-ID")}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <button
-                onClick={handlePayNow}
-                disabled={!amount || addCreditMutation.isPending}
-                className={`w-full py-3 px-6 rounded-xl shadow-md font-medium flex items-center justify-center gap-2 ${
-                  amount && !addCreditMutation.isPending
-                    ? "bg-[#2A8E9E] text-white hover:bg-[#033247] hover:shadow-lg"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                {addCreditMutation.isPending
-                  ? "Memproses..."
-                  : "Bayar Sekarang"}
-              </button>
-
-              {addCreditMutation.isError && (
-                <p className="mt-3 text-sm text-red-600">
-                  {(addCreditMutation.error as any)?.message ??
-                    "Terjadi kesalahan"}
-                </p>
-              )}
-            </div>
+            <BalanceTopUp
+              amount={amount}
+              onAmountChange={handleAmountChange}
+              onSuggestedAmount={handleSuggestedAmount}
+              onPayNow={handlePayNow}
+              isPending={addCreditMutation.isPending}
+              errorMessage={
+                addCreditMutation.isError
+                  ? (addCreditMutation.error as any)?.message ??
+                    "Terjadi kesalahan"
+                  : undefined
+              }
+            />
           )}
-          <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#E9F3F4]">
-            <div className="p-5 border-b border-[#E9F3F4]">
-              <h3 className="font-bold text-lg text-[#033247]">
-                Riwayat Top Up
-              </h3>
-            </div>
 
-            {history?.length === 0 ? (
-              <div className="p-6 text-center text-gray-500">
-                Belum ada riwayat transaksi
-              </div>
-            ) : (
-              <ul className="divide-y divide-[#E9F3F4]">
-                {history?.map((item) => {
-                  const statusUi = getTopupStatusUi(item.status);
-                  const showVA =
-                    isAwaitingPayment(item.status) && item.virtual_account_id;
-                  return (
-                    <li
-                      key={item.id}
-                      className="p-4 hover:bg-[#E9F3F4] transition-colors"
-                    >
-                      <div className="flex justify-between items-start gap-4">
-                        <div className="min-w-0">
-                          <p className="font-medium text-[#1D1E20]">
-                            Top Up Saldo
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {formatDateTimeWIB(item.created_at)}
-                          </p>
-
-                          {showVA && (
-                            <div className="mt-2 flex flex-wrap items-center gap-2">
-                              <span className="text-xs text-[#033247] bg-[#E9F3F4] px-2 py-1 rounded">
-                                VA: <strong>{item.virtual_account_id}</strong>
-                              </span>
-
-                              <button
-                                type="button"
-                                onClick={async () => {
-                                  try {
-                                    await navigator.clipboard.writeText(
-                                      item.virtual_account_id!
-                                    );
-                                    toast.success("Nomor VA disalin");
-                                  } catch {
-                                    toast.error("Gagal menyalin VA");
-                                  }
-                                }}
-                                className="text-xs border border-[#2A8E9E] text-[#2A8E9E] px-2 py-1 rounded hover:bg-[#2A8E9E] hover:text-white transition"
-                              >
-                                Salin VA
-                              </button>
-                              <span className="text-xs text-gray-500">
-                                {item.expired_at
-                                  ? ` • Exp: ${formatDateTimeWIB(
-                                      item.expired_at
-                                    )}`
-                                  : ""}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="text-right shrink-0">
-                          <p className="font-bold text-[#2A8E9E]">
-                            +Rp{formatMoneyIDR(item.amount)}
-                          </p>
-                          <span
-                            className={`inline-block mt-1 text-xs font-medium px-2 py-0.5 rounded ${statusUi.className}`}
-                          >
-                            {statusUi.label}
-                          </span>
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
+          <BalanceHistory
+            history={history ?? []}
+            formatMoney={(n: number) => formatMoneyIDR(n)}
+          />
         </div>
       </div>
     </AuthMessage>
