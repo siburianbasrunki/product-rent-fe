@@ -1,10 +1,10 @@
 // import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+// import { useAuth } from "../context/AuthContext";
 import type { JSX } from "react";
 
 export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-  const { token } = useAuth();
-  console.log("token", token);
+  // const { token } = useAuth();
+  // console.log("token", token);
   
   // const location = useLocation();
 

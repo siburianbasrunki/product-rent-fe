@@ -26,6 +26,10 @@ export const LoginPage = () => {
       setLoading(false);
     }
   };
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (error) setError("");
+    setEmail(e.target.value);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#E9F3F4] px-4">
@@ -53,7 +57,7 @@ export const LoginPage = () => {
               className="w-full px-4 py-3 border border-[#2A8E9E]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2A8E9E] focus:border-[#2A8E9E]"
               placeholder="contoh@email.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               required
             />
           </div>

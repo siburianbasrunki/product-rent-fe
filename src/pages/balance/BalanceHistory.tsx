@@ -17,7 +17,7 @@ export const BalanceHistory: React.FC<Props> = ({ history, formatMoney }) => {
   return (
     <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-[#E9F3F4]">
       <div className="p-5 border-b border-[#E9F3F4]">
-        <h3 className="font-bold text-lg text-[#033247]">Riwayat Top Up</h3>
+        <h3 className="font-bold text-lg text-[#033247]">Riwayat Transaksi</h3>
       </div>
 
       {history.length === 0 ? (

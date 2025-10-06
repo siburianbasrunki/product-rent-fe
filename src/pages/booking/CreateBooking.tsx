@@ -2,20 +2,29 @@ import { useState } from "react";
 import {
   FaCalendarAlt,
   FaArrowLeft,
-  FaMoneyBillWave,
   FaIdCard,
   FaSpinner,
   FaTimes,
+  FaWallet,
 } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useCreateBooking, useUploadImage } from "../../hook/booking";
 import { useInfoProductByid, useProductByid } from "../../hook/product";
 import { useCredit } from "../../hook/credit";
 import { formatRupiah } from "../../helper/formatRupiah";
-
+import BRILogo from "../../assets/bri-logo.png";
+import BCALogo from "../../assets/bca-logo.png";
+import MandiriLogo from "../../assets/mandiri-log.png";
+import PlaneLottieOverlay from "../../components/PlaneLottieOverlay";
+const BANK_OPTIONS = [
+  { type: 1 as const, name: "Mandiri", logo: MandiriLogo },
+  { type: 2 as const, name: "BCA", logo: BCALogo },
+  { type: 3 as const, name: "BRI", logo: BRILogo },
+];
 export const CreateBooking = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [showPlane, setShowPlane] = useState(false);
   const { mutate: createBooking, isPending } = useCreateBooking();
   const { mutateAsync: uploadImage } = useUploadImage();
   const { data: productDetail, isLoading } = useProductByid();
@@ -81,7 +90,7 @@ export const CreateBooking = () => {
 
       createBooking(payload, {
         onSuccess: () => {
-          navigate("/booking");
+          setShowPlane(true);
         },
         onError: (error) => {
           console.error("Booking error:", error);
@@ -273,44 +282,64 @@ export const CreateBooking = () => {
               <label className="block text-sm font-medium mb-1 text-[#1D1E20]">
                 Metode Pembayaran
               </label>
-              <div className="space-y-2">
-                <div className="space-y-2">
-                  <label className="flex items-center p-3 border border-[#E9F3F4] rounded-lg cursor-pointer bg-white hover:bg-[#E9F3F4] transition-colors duration-300">
-                    <input
-                      type="radio"
-                      name="type"
-                      value={1}
-                      checked={bookingData.type === 1}
-                      onChange={() =>
-                        setBookingData((prev) => ({ ...prev, type: 1 }))
-                      }
-                      className="mr-2 text-[#2A8E9E] focus:ring-[#2A8E9E]"
-                    />
-                    <FaMoneyBillWave className="mr-2 text-[#2A8E9E]" />
-                    <span className="text-[#1D1E20]">
-                      Bank Transfer (Virtual Account)
-                    </span>
-                  </label>
-                </div>
-                <div className="space-y-2">
-                  <label className="flex items-center p-3 border border-[#E9F3F4] rounded-lg cursor-pointer bg-white hover:bg-[#E9F3F4] transition-colors duration-300">
-                    <input
-                      type="radio"
-                      name="type"
-                      value={2}
-                      checked={bookingData.type === 2}
-                      onChange={() =>
-                        setBookingData((prev) => ({ ...prev, type: 2 }))
-                      }
-                      className="mr-2 text-[#2A8E9E] focus:ring-[#2A8E9E]"
-                    />
-                    <FaMoneyBillWave className="mr-2 text-[#2A8E9E]" />
-                    <span className="text-[#1D1E20]">
-                      Saldo Rent-App ({formatRupiah(credit?.balance || 0)})
-                    </span>
-                  </label>
-                </div>
+
+              <div className="mb-2 text-sm font-medium text-[#033247]">
+                Bank Transfer (Virtual Account)
               </div>
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                {BANK_OPTIONS.map((b) => (
+                  <label
+                    key={b.type}
+                    className={`relative flex flex-col items-center justify-center gap-2 p-3 border rounded-lg bg-white cursor-pointer transition-all duration-300
+          ${
+            bookingData.type === b.type
+              ? "border-[#2A8E9E] ring-2 ring-[#2A8E9E]/30"
+              : "border-[#E9F3F4] hover:bg-[#E9F3F4]"
+          }`}
+                  >
+                    <input
+                      type="radio"
+                      name="type"
+                      value={b.type}
+                      checked={bookingData.type === b.type}
+                      onChange={() =>
+                        setBookingData((prev) => ({ ...prev, type: b.type }))
+                      }
+                      className="absolute top-2 left-2 accent-[#2A8E9E]"
+                    />
+                    <img
+                      src={b.logo}
+                      alt={`${b.name} logo`}
+                      className="h-8 object-contain"
+                    />
+                    <span className="text-xs text-[#1D1E20]">{b.name}</span>
+                  </label>
+                ))}
+              </div>
+
+              <label
+                className={`flex items-center p-3 border rounded-lg cursor-pointer bg-white transition-colors duration-300
+      ${
+        bookingData.type === 4
+          ? "border-[#2A8E9E] ring-2 ring-[#2A8E9E]/30"
+          : "border-[#E9F3F4] hover:bg-[#E9F3F4]"
+      }`}
+              >
+                <input
+                  type="radio"
+                  name="type"
+                  value={4}
+                  checked={bookingData.type === 4}
+                  onChange={() =>
+                    setBookingData((prev) => ({ ...prev, type: 4 }))
+                  }
+                  className="mr-2 accent-[#2A8E9E]"
+                />
+                <FaWallet className="mr-2 text-[#2A8E9E]" />
+                <span className="text-[#1D1E20]">
+                  Saldo Rent-App ({formatRupiah(credit?.balance || 0)})
+                </span>
+              </label>
             </div>
 
             <button
@@ -331,6 +360,15 @@ export const CreateBooking = () => {
         </div>
       </div>
       <div className="mb-[90px]"></div>
+      <PlaneLottieOverlay
+        show={showPlane}
+        loop={false}
+        durationMs={1200}
+        onDone={() => {
+          setShowPlane(false);
+          navigate("/booking");
+        }}
+      />
     </>
   );
 };

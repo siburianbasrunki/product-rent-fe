@@ -270,7 +270,7 @@ export const BookingDetail = () => {
                       <span className="text-[#033247]/70">
                         Metode Pembayaran
                       </span>
-                      <span className="text-[#033247]">Bank Transfer BCA</span>
+                      <span className="text-[#033247]">{booking.method === "Balance" ? "Saldo" : `${booking.method}`}</span>
                     </div>
 
                     {booking.expired_at && (

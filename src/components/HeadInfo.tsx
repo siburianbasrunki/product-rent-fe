@@ -5,7 +5,7 @@ import imgProfile from "../assets/download (5).jpg";
 const HeadInfoAccount = () => {
   const navigate = useNavigate();
   const { data: user } = useProfile();
-  console.log("user", user);
+  // console.log("user", user);
 
   const isUser = user?.name;
   return (

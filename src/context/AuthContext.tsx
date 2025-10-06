@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [email, setEmail] = useState("");
 
   const handleSetToken = (newToken: string | null) => {
-    console.log("Storing token:", newToken); 
+    // console.log("Storing token:", newToken); 
     if (newToken) {
       localStorage.setItem("token", newToken);
     } else {

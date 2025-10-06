@@ -2,7 +2,7 @@ import type { User } from "../service/auth";
 import type { Camera } from "./camera";
 
 export type BookingStatus = "PENDING" | "PAID" | "CANCELLED" | "COMPLETED";
-export type PaymentMethod = "BANK_TRANSFER" | "QRIS" | "CREDIT_CARD";
+export type PaymentMethod = "Balance" | "Mandiri" | "BCA" | "BRI";
 export type PaymentStatus = "PENDING" | "SETTLED" | "EXPIRED" | "FAILED";
 
 export interface Booking {
@@ -55,6 +55,7 @@ export interface BookingDetailModel{
   user_id: string;
   username: string;
   email: string;
+  method: string;
   payment_id: string;
   order_id: string;
   product_detail: {

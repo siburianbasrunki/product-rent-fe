@@ -1,14 +1,14 @@
 import { useCategory } from "../../hook/categories";
 import { EmptyState } from "../../components/EmptyState";
-import { CardSkeleton } from "../../components/Skeleton";
 import { useNavigate } from "react-router-dom";
+import { SkeletonCard } from "../../components/Skeleton";
 // import { FaArrowRight } from "react-icons/fa";
 
 export const CategorySection = () => {
   const navigate = useNavigate();
   const { data: category, isLoading, isError, error } = useCategory();
 
-  if (isLoading) return <CardSkeleton />;
+  if (isLoading) return <SkeletonCard />;
   if (isError) return <EmptyState title={error.message} />;
 
   return (

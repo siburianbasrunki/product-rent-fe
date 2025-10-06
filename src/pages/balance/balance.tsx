@@ -10,13 +10,14 @@ import { formatMoneyIDR } from "../../helper/topup";
 import toast from "react-hot-toast";
 import { BalanceTopUp } from "./BalanceTopUp";
 import { BalanceHistory } from "./BalanceHistory";
+import PlaneLottieOverlay from "../../components/PlaneLottieOverlay";
 
 export const BalancePage = () => {
   const { data: credit } = useCredit();
   const { data: history } = useHistoryTopUpCredit();
   const addCreditMutation = useAddCredit();
   const { data: user } = useProfile();
-
+  const [showTopUpAnim, setShowTopUpAnim] = useState(false);
   const [showTopUpForm, setShowTopUpForm] = useState(false);
   const [amount, setAmount] = useState("");
 
@@ -42,16 +43,18 @@ export const BalancePage = () => {
     const p = addCreditMutation.mutateAsync({ amount: parsed, type: 1 });
     toast.promise(p, {
       loading: "Memproses pembayaran...",
-      success: "Top up berhasil!",
+      success: "Memproses pembayaran...",
       error: (err: any) => err?.message ?? "Top up gagal",
     });
 
     try {
       await p;
+
+      setShowTopUpAnim(true);
+
       setShowTopUpForm(false);
       setAmount("");
-    } catch {
-    }
+    } catch {}
   };
 
   return (
@@ -143,6 +146,12 @@ export const BalancePage = () => {
           />
         </div>
       </div>
+      <PlaneLottieOverlay
+        show={showTopUpAnim}
+        loop={false}
+        durationMs={1200}
+        onDone={() => setShowTopUpAnim(false)}
+      />
     </AuthMessage>
   );
 };

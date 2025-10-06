@@ -1,4 +1,5 @@
 import { getEndpoints } from "../config/config";
+import { ApiError, fetchJSON } from "../helper/api-err";
 
 export interface User {
   id: string;
@@ -32,7 +33,8 @@ const AuthService = {
     const json = await res.json();
 
     if (!res.ok) {
-      const errorMessage = json?.message || json?.error || `HTTP error! status: ${res.status}`;
+      const errorMessage =
+        json?.message || json?.error || `HTTP error! status: ${res.status}`;
       throw new Error(errorMessage);
     }
 
@@ -51,14 +53,15 @@ const AuthService = {
         level: 1,
       }),
     });
-    
+
     const json = await res.json();
 
     if (!res.ok) {
-      const errorMessage = json?.message || json?.error || `HTTP error! status: ${res.status}`;
+      const errorMessage =
+        json?.message || json?.error || `HTTP error! status: ${res.status}`;
       throw new Error(errorMessage);
     }
-    
+
     return json.data;
   },
 
@@ -71,33 +74,29 @@ const AuthService = {
       },
       body: JSON.stringify({ email, code, level: 1 }),
     });
-    
+
     const json = await res.json();
-    
+
     if (!res.ok) {
-      const errorMessage = json?.message || json?.error || `HTTP error! status: ${res.status}`;
+      const errorMessage =
+        json?.message || json?.error || `HTTP error! status: ${res.status}`;
       throw new Error(errorMessage);
     }
-    
+
     return json.data;
   },
 
   async getProfile(): Promise<User> {
     const { user } = getEndpoints();
-    const res = await fetch(`${user}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    
-    const json = await res.json();
-    
-    if (!res.ok) {
-      const errorMessage = json?.message || json?.error || `HTTP error! status: ${res.status}`;
-      throw new Error(errorMessage);
+    const token = localStorage.getItem("token") || "";
+    try {
+      const json = await fetchJSON<{ data: User }>(`${user}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return json.data;
+    } catch (err) {
+      throw err as ApiError;
     }
-    
-    return json.data;
   },
 };
 
